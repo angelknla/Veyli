@@ -79,7 +79,7 @@ export const embeddedPreviewRevisions = async (keys: string[]) => {
      from public.veyli_challenges c join public.veyli_clues cl on cl.challenge_id=c.id and cl.position=1
      left join public.veyli_media m on m.id=cl.media_id
      join public.veyli_modes mode on mode.id=c.mode_id
-     where c[data-testid~="active"]_revision and c.public_key=any($1) group by c.public_key`,
+     where c.active_revision and c.public_key=any($1) group by c.public_key`,
     [keys]
   );
   return result.rows;

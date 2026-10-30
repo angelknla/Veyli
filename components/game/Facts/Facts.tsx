@@ -23,13 +23,13 @@ const Facts = ({ state }: { state: GameState }) => {
         </span>
       </div>
       {facts.length ? (
-        // biome-ignore lint/a11y/noNoninteractiveTabindex: The scrollable fact log needs keyboard access.
         <div
           className={styles.factGrid}
           data-testid="fact-grid"
           ref={list}
           role="log"
           aria-label="Revealed facts"
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: The scrollable fact log needs keyboard access.
           tabIndex={0}
         >
           {[...facts].reverse().map((fact) => {

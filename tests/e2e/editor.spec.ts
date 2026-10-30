@@ -124,6 +124,5 @@ test('updates browse thumbnails after edits and matches the initial gameplay ima
   const currentImage = await image(admin.request, currentUrl!);
   expect(currentImage).not.toEqual(previousImage);
   const state = await gameState(admin.request, path);
-  expect(currentImage).toEqual(await image(admin.request, state.clues[0][data-testid~="image"
-  ]Url!))
+  expect(currentImage).toEqual(await image(admin.request, state.clues[0].imageUrl!));
 });

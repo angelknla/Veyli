@@ -304,10 +304,10 @@ const Game = ({ challengeKey }: { challengeKey: string }) => {
               <div className={styles.guessHistory} data-testid="guess-history" aria-live="polite">
                 <span className={cn(sharedStyles.eyebrow, styles.eyebrow)}>YOUR GUESSES</span>
                 {state.guesses.length ? (
-                  // biome-ignore lint/a11y/noNoninteractiveTabindex: The scrollable guess history needs keyboard access.
                   <ol
                     className={styles.guessHistoryList}
                     aria-label="Previous guesses"
+                    // biome-ignore lint/a11y/noNoninteractiveTabindex: The scrollable guess history needs keyboard access.
                     tabIndex={0}
                   >
                     {[...state.guesses].reverse().map((value) => (

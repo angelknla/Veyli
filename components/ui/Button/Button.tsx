@@ -20,11 +20,11 @@ export const Button = ({
   variant,
   size,
   className,
-  type = styles.button,
+  type = 'button',
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof variants> & { asChild?: boolean }) => {
-  const Component = asChild ? Slot : styles.button;
+  const Component = asChild ? Slot : 'button';
   return (
     <Component
       className={cn(variants({ variant, size }), className)}
