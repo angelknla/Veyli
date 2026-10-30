@@ -105,6 +105,8 @@ Add the following through Netlify’s **Project configuration → Environment va
 
 The Node 26 build and Node 24 function runtime are separate settings. Netlify falls back to a supported runtime when the build’s Node version is unavailable on AWS Lambda. `AWS_LAMBDA_JS_RUNTIME` must be set through the UI, CLI or API, not `netlify.toml`. Keep Yarn Classic as declared in `package.json`.
 
+Mark credentials as secret values; media policy flags, runtime versions and the source user agent are ordinary settings. `TMDB_IMAGE_USAGE=noncommercial` is public configuration, and its allowed values also appear in code and documentation. `netlify.toml` excludes only that key from environment-value secret scanning to prevent false positives. Supabase keys, API credentials, cookie-signing secrets and the admin password remain covered.
+
 Optional variables are `IGDB_CLIENT_ID` and `IGDB_CLIENT_SECRET` for IGDB metadata, and `MONITORING_ENDPOINT` for error reporting. `DATABASE_URL` is only needed by the local migration script. Leave `VEYLI_INTEGRATION_DATABASE` and `VEYLI_BUILD_DIRECTORY` unset on Netlify.
 
 The shared Supabase installation and imported media remain available to the hosted app. No Supabase Auth redirect configuration is needed because players have no login. Open `/admin` with username `admin` and the configured `ADMIN_ACCESS_KEY` as its password.

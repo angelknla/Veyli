@@ -4,3 +4,5 @@
 
 [build.environment]
   NODE_VERSION = "26.4.0"
+  # Public media policy flag; credentials remain covered by secrets scanning.
+  SECRETS_SCAN_OMIT_KEYS = "TMDB_IMAGE_USAGE"
