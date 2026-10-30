@@ -1,4 +1,5 @@
 import styles from '@/components/pages/Leaderboard/Leaderboard.module.css';
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import { rankings } from '@/features/game/service';
 
@@ -15,7 +16,9 @@ const Leaderboard = async () => {
     <div className={sharedStyles.pageShell}>
       <header className={sharedStyles.pageHeading}>
         <p className={sharedStyles.eyebrow}>DAILY RANKINGS</p>
-        <h1>The high scores.</h1>
+        <h1>
+          <Dotted>The high scores.</Dotted>
+        </h1>
       </header>
       <p className={styles.rankingNote}>{date} · Resets at 00:00 UTC.</p>
       {rows.length ? (
@@ -44,7 +47,11 @@ const Leaderboard = async () => {
         </table>
       ) : (
         <div className={sharedStyles.emptyState}>
-          <h2>{available ? 'Take the first spot.' : 'Rankings are taking a short break.'}</h2>
+          <h2>
+            <Dotted>
+              {available ? 'Take the first spot.' : 'Rankings are taking a short break.'}
+            </Dotted>
+          </h2>
           <p>{available ? 'Play today to join the leaderboard.' : 'Please try again shortly.'}</p>
         </div>
       )}

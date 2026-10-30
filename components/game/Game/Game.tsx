@@ -13,6 +13,7 @@ import PageLoading from '@/components/layout/PageLoading/PageLoading';
 import { Button } from '@/components/ui/Button/Button';
 import buttonStyles from '@/components/ui/Button/Button.module.css';
 import { Dialog } from '@/components/ui/Dialog/Dialog';
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import { type CatalogueItem, type GameState, gameStateSchema } from '@/features/game/contracts';
 import { recordCompletion } from '@/features/statistics/store';
@@ -108,7 +109,9 @@ const Game = ({ challengeKey }: { challengeKey: string }) => {
           Back to today
         </Link>
         <div className={sharedStyles.emptyState}>
-          <h1>The mystery will have to wait.</h1>
+          <h1>
+            <Dotted>The mystery will have to wait.</Dotted>
+          </h1>
           <p role="alert">{error}</p>
           <Button
             onClick={() => {

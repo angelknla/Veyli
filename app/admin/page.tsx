@@ -1,4 +1,5 @@
 import Admin from '@/components/admin/Admin/Admin';
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import { adminSnapshot } from '@/features/admin/server';
 export const dynamic = 'force-dynamic';
 export const metadata = {
@@ -21,7 +22,9 @@ const AdminPage = async () => {
     return (
       <div className="page-shell narrow-shell">
         <div className="empty-state">
-          <h1>The studio needs its database.</h1>
+          <h1>
+            <Dotted>The studio needs its database.</Dotted>
+          </h1>
           <p>
             Apply supabase/setup.sql to the FitnessJourni project and run yarn db:check. This
             internal page will then show your content.

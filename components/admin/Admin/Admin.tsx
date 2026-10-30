@@ -8,6 +8,7 @@ import Preview from '@/components/admin/Preview/Preview';
 import ProviderImport from '@/components/admin/ProviderImport/ProviderImport';
 import RecordEditor from '@/components/admin/RecordEditor/RecordEditor';
 import { Button } from '@/components/ui/Button/Button';
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import type { AdminRecord, AdminSnapshot, Entity } from '@/features/admin/contracts';
 import { cn } from '@/lib/utils';
@@ -200,7 +201,9 @@ const Admin = ({
       <header className={styles.adminHeading}>
         <div>
           <p className={sharedStyles.eyebrow}>PROTECTED INTERNAL WORKSPACE</p>
-          <h1>The content studio.</h1>
+          <h1>
+            <Dotted>The content studio.</Dotted>
+          </h1>
         </div>
         <Button variant="secondary" size="small" disabled={busy} onClick={refreshSources}>
           {busy ? 'Working…' : 'Refresh sources'}

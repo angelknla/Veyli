@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import relatedStyles2 from '@/components/admin/Admin/Admin.module.css';
 import styles from '@/components/game/Results/Results.module.css';
 import { Button } from '@/components/ui/Button/Button';
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import type { GameState } from '@/features/game/contracts';
 import { shareText } from '@/features/sharing/share';
@@ -82,7 +83,7 @@ const Results = ({ state }: { state: GameState }) => {
         {state.status === 'won' ? 'MYSTERY SOLVED' : 'THE REVEAL'}
       </p>
       <h2 id="result-title" ref={titleRef} tabIndex={-1}>
-        {state.status === 'won' ? 'You knew it.' : 'Now you know.'}
+        <Dotted>{state.status === 'won' ? 'You knew it.' : 'Now you know.'}</Dotted>
       </h2>
       <div className={styles.answerReveal} data-testid="answer-reveal">
         <span className={sharedStyles.muted}>THE ANSWER</span>

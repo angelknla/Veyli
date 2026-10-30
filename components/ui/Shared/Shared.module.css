@@ -134,6 +134,10 @@
 .brandDot {
   color: #ff3045;
 }
+/** Brand-red copy inverts its dot to white so the stop still reads. */
+.invertedDot {
+  color: #ffffff;
+}
 .textLink {
   min-height: 44px;
   font-size: 15px;

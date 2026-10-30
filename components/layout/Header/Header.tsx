@@ -9,7 +9,7 @@ const Header = () => {
       <Link className={styles.brandLink} href="/" aria-label="Veyli home">
         <BrandMark size={27} />
         <span className={sharedStyles.wordmark}>
-          VEYLI<span className={sharedStyles.brandDot}>.</span>
+          VEYLI<span className={sharedStyles.invertedDot}>.</span>
         </span>
       </Link>
       <nav className={styles.mainNav} aria-label="Main navigation">

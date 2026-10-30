@@ -9,7 +9,7 @@ const Footer = () => {
     <footer className={styles.siteFooter}>
       <div>
         <span className={cn(sharedStyles.wordmark, styles.wordmark)}>
-          VEYLI<span className={sharedStyles.brandDot}>.</span>
+          VEYLI<span className={sharedStyles.invertedDot}>.</span>
         </span>
         <p>Every fandom. Every day.</p>
       </div>

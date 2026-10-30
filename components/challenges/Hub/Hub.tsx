@@ -18,6 +18,7 @@ import styles from '@/components/challenges/Hub/Hub.module.css';
 import YearRangeControls, { useYearRange } from '@/components/challenges/YearRange/YearRange';
 import LoadingImage from '@/components/LoadingImage/LoadingImage';
 import buttonStyles from '@/components/ui/Button/Button.module.css';
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import type { Challenge, HubData } from '@/features/game/contracts';
 import { earnedAchievements, statistics } from '@/features/statistics/compute';
@@ -333,12 +334,14 @@ export const HomeHub = ({ data }: { data: HubData }) => {
         </div>
         <div className={styles.heroCopy}>
           <p className={cn(sharedStyles.eyebrow, styles.eyebrow)}>
-            <span className={sharedStyles.liveDot} /> MOVIES. TV. GAMES.
+            <span className={sharedStyles.liveDot} /> <Dotted>MOVIES. TV. GAMES.</Dotted>
           </p>
           <h1>
-            PRESS PLAY.
+            <Dotted>PRESS PLAY.</Dotted>
             <br />
-            <span>PROVE IT.</span>
+            <span>
+              PROVE IT<span className={sharedStyles.invertedDot}>.</span>
+            </span>
           </h1>
           <p className={styles.heroDescription}>Know the frame. Name the game.</p>
           <div className={styles.heroActions}>
@@ -377,7 +380,9 @@ export const HomeHub = ({ data }: { data: HubData }) => {
       <Link href="/archive" className={styles.archiveBanner}>
         <div>
           <span className={cn(sharedStyles.eyebrow, styles.eyebrow)}>MISSED A DROP?</span>
-          <h2>The archive awaits.</h2>
+          <h2>
+            <Dotted>The archive awaits.</Dotted>
+          </h2>
         </div>
         <span className={styles.archiveBannerAction}>
           Keep playing <ArrowRight size={24} />

@@ -1,5 +1,6 @@
 import LoadingImage from '@/components/LoadingImage/LoadingImage';
 import styles from '@/components/pages/Credits/Credits.module.css';
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 
 const Credits = () => {
@@ -7,7 +8,9 @@ const Credits = () => {
     <div className={sharedStyles.pageShell}>
       <header className={sharedStyles.pageHeading}>
         <p className={sharedStyles.eyebrow}>THE PEOPLE BEHIND THE PICTURES</p>
-        <h1>Credit where it’s due.</h1>
+        <h1>
+          <Dotted>Credit where it’s due.</Dotted>
+        </h1>
         <p>
           Movie, TV and game puzzles use attributed provider images. Music and Pop Culture use
           open-licensed Wikimedia media. Each completed challenge includes its image sources and
@@ -42,7 +45,9 @@ const Credits = () => {
             fallback={<span>TMDB</span>}
           />
         </a>
-        <h2>Words, type & metadata.</h2>
+        <h2>
+          <Dotted>Words, type & metadata.</Dotted>
+        </h2>
         <p>
           Existing Nosferatu Quote rounds use a Veyli translation of Henrik Galeen’s 1922 German
           intertitle for <em>Nosferatu</em>. The original work is in the public domain in the UK;

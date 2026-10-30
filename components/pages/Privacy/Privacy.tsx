@@ -1,3 +1,4 @@
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import { cn } from '@/lib/utils';
 
@@ -6,12 +7,16 @@ const Privacy = () => {
     <div className={cn(sharedStyles.pageShell, sharedStyles.narrowShell)}>
       <article className={sharedStyles.prosePage}>
         <p className={sharedStyles.eyebrow}>PLAY WITHOUT A PROFILE</p>
-        <h1>Curiosity doesn’t need an account.</h1>
+        <h1>
+          <Dotted>Curiosity doesn’t need an account.</Dotted>
+        </h1>
         <p>
           Veyli does not ask for your name, email address or password. There is no player login or
           registration.
         </p>
-        <h2>What your browser keeps.</h2>
+        <h2>
+          <Dotted>What your browser keeps.</Dotted>
+        </h2>
         <p>
           An essential HttpOnly cookie holds a signed random identifier, valid for up to one year.
           It connects your visits to your unfinished rounds. Scripts on the page cannot read it.
@@ -21,7 +26,9 @@ const Privacy = () => {
           in this browser’s local storage. Clearing cookies, local storage or other browser data can
           lose your progress and local history. It does not carry across devices.
         </p>
-        <h2>What the server keeps.</h2>
+        <h2>
+          <Dotted>What the server keeps.</Dotted>
+        </h2>
         <p>
           The server stores a keyed digest of that random identifier, guesses and confirmed results.
           These let it enforce attempts, restore games and calculate anonymous rankings. It does not
@@ -33,14 +40,18 @@ const Privacy = () => {
           during ongoing requests. Operational errors are logged with codes and request references,
           without guesses, cookie values or secret keys.
         </p>
-        <h2>Images and integrations.</h2>
+        <h2>
+          <Dotted>Images and integrations.</Dotted>
+        </h2>
         <p>
           Game images are served through Veyli after checking which clues you can see. Opening a
           source or licence link takes you to that source’s website. Optional entertainment metadata
           providers are called by internal editors on the server; players do not send searches to
           those providers.
         </p>
-        <h2>Local limitations.</h2>
+        <h2>
+          <Dotted>Local limitations.</Dotted>
+        </h2>
         <p>
           This is an account-free product. Clearing browser data or using a different browser starts
           a new anonymous session. We do not offer identity recovery or account migration.

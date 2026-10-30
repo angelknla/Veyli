@@ -5,6 +5,7 @@ import Link from 'next/link';
 import relatedStyles1 from '@/components/admin/Admin/Admin.module.css';
 import styles from '@/components/statistics/Statistics/Statistics.module.css';
 import buttonStyles from '@/components/ui/Button/Button.module.css';
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import type { HubData } from '@/features/game/contracts';
 import { earnedAchievements, statistics } from '@/features/statistics/compute';
@@ -22,7 +23,9 @@ const Statistics = ({ data }: { data: HubData }) => {
     <div className={sharedStyles.pageShell}>
       <header className={sharedStyles.pageHeading}>
         <p className={sharedStyles.eyebrow}>PLAYER STATS</p>
-        <h1>Your stats.</h1>
+        <h1>
+          <Dotted>Your stats.</Dotted>
+        </h1>
       </header>
       <div className={relatedStyles1.statsGrid} data-testid="stats-grid">
         {[

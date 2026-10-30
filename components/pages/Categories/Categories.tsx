@@ -2,6 +2,7 @@ import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import CategoryIcon from '@/components/challenges/CategoryIcon/CategoryIcon';
 import styles from '@/components/pages/Categories/Categories.module.css';
+import { Dotted } from '@/components/ui/Dotted/Dotted';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import { categories } from '@/features/game/service';
 import { cn } from '@/lib/utils';
@@ -12,7 +13,9 @@ const Categories = async () => {
     <div className={sharedStyles.pageShell}>
       <header className={sharedStyles.pageHeading}>
         <p className={cn(sharedStyles.eyebrow, styles.eyebrow)}>PICK YOUR WORLD</p>
-        <h1>Pick your universe.</h1>
+        <h1>
+          <Dotted>Pick your universe.</Dotted>
+        </h1>
       </header>
       {data.length ? (
         <div className={styles.categoryGrid}>
@@ -62,7 +65,9 @@ const Categories = async () => {
         </div>
       ) : (
         <div className={sharedStyles.emptyState}>
-          <h2>The worlds are getting ready.</h2>
+          <h2>
+            <Dotted>The worlds are getting ready.</Dotted>
+          </h2>
           <p>The catalogue is temporarily unavailable. Please return shortly.</p>
         </div>
       )}
