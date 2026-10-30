@@ -1,5 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
+import { mergeLineup } from '@/features/challenges/lineup';
 import { previewRevisions } from '@/features/challenges/preview-revisions';
 import type { YearRange } from '@/features/challenges/years';
 import { importCatalogue } from '@/features/entertainment/catalogue-import';
@@ -62,8 +63,9 @@ export async function hub(date?: string, range?: YearRange): Promise<HubData> {
             end_year: modern.to,
           });
           const filtered = hubSchema.parse(currentMovies);
-          data.challenges.unshift(
-            ...(await sourceRangeRounds(db, day, modern, filtered, 'movies'))
+          data.challenges = mergeLineup(
+            await sourceRangeRounds(db, day, modern, filtered, 'movies'),
+            data.challenges
           );
         }
       }

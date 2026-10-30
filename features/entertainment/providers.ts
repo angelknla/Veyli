@@ -29,18 +29,30 @@ async function requestJson(url: URL | string, options: RequestInit = {}) {
   }
 }
 let twitchToken: { value: string; expiry: number } | null = null;
+let tokenRequest: Promise<string> | null = null;
 async function igdbToken() {
   if (twitchToken && twitchToken.expiry > Date.now()) return twitchToken.value;
+  if (!tokenRequest)
+    tokenRequest = fetchIgdbToken().finally(() => {
+      tokenRequest = null;
+    });
+  return tokenRequest;
+}
+async function fetchIgdbToken() {
   const client = process.env.IGDB_CLIENT_ID;
   const secret = process.env.IGDB_CLIENT_SECRET;
   if (!client || !secret) throw new ServiceError('provider_unconfigured', 503);
-  const url = new URL('https://id.twitch.tv/oauth2/token');
-  url.searchParams.set('client_id', client);
-  url.searchParams.set('client_secret', secret);
-  url.searchParams.set('grant_type', 'client_credentials');
-  const response = z
-    .object({ access_token: z.string(), expires_in: z.number() })
-    .parse(await requestJson(url, { method: 'POST', cache: 'no-store' }));
+  const response = z.object({ access_token: z.string(), expires_in: z.number() }).parse(
+    await requestJson('https://id.twitch.tv/oauth2/token', {
+      method: 'POST',
+      cache: 'no-store',
+      body: new URLSearchParams({
+        client_id: client,
+        client_secret: secret,
+        grant_type: 'client_credentials',
+      }),
+    })
+  );
   twitchToken = {
     value: response.access_token,
     expiry: Date.now() + (response.expires_in - 60) * 1000,

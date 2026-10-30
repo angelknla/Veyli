@@ -1,7 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, beforeEach, expect, it } from 'vitest';
-import type { GameState } from '@/features/game/contracts';
+import { mergeLineup } from '@/features/challenges/lineup';
+import type { Challenge, GameState } from '@/features/game/contracts';
 import { GameEngine, normalizeTitle } from '@/features/game/engine';
 import { callRpc, copyRound, createTestDatabase } from '../support/postgres';
 
@@ -205,16 +206,26 @@ it('returns anonymous rankings and trusted completion history', async () => {
   ]);
 });
 
-it('supports era rounds without replacing daily puzzles or multiplying leaderboard scores', async () => {
+it('shows one preferred era round per mode while preserving daily history and scoring', async () => {
   const extra = `${key()}-range-0123456789abcdef0123`;
   const id = await copyRound(db, key(), extra, 'inception-2010');
   await db.query("update public.veyli_challenges set status='draft' where id=$1", [id]);
   await expect(engine.open(player(), extra)).rejects.toThrow('challenge_unavailable');
   await db.query("update public.veyli_challenges set status='scheduled' where id=$1", [id]);
   const digest = player();
-  expect((await engine.open(digest, extra)).clues).toHaveLength(1);
-  const hub = await invoke<{ challenges: { key: string }[] }>('veyli_hub');
+  const round = await engine.open(digest, extra);
+  expect(round.clues).toHaveLength(1);
+  const hub = await invoke<{ challenges: Challenge[] }>('veyli_hub');
   expect(hub.challenges.some((round) => round.key === extra)).toBe(false);
+  const lineup = mergeLineup([round.challenge], hub.challenges);
+  expect(
+    lineup.filter((value) => value.category.slug === 'movies' && value.mode.slug === 'classic')
+  ).toEqual([round.challenge]);
+  expect(lineup).toHaveLength(hub.challenges.length);
+  expect(lineup.filter((value) => value.category.slug !== 'movies')).toEqual(
+    hub.challenges.filter((value) => value.category.slug !== 'movies')
+  );
+  expect(mergeLineup([], hub.challenges)).toEqual(hub.challenges);
   await engine.guess(digest, extra, 'inception-2010');
   await engine.guess(digest, key(), 'nosferatu-1922');
   expect(await invoke('veyli_leaderboard', [day])).toEqual([

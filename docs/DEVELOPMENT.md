@@ -24,7 +24,7 @@ Historical rounds and their uploaded images stay in Supabase for saved results a
 
 ## Source content
 
-Movies and TV use TMDB; games use RAWG; artists and pop-culture characters use Wikidata/Wikimedia Commons, with MusicBrainz for music facts and album matching. Optional IGDB metadata support accepts `IGDB_CLIENT_ID` and `IGDB_CLIENT_SECRET`.
+Movies and TV use TMDB; games use RAWG; artists and pop-culture characters use Wikidata/Wikimedia Commons, with MusicBrainz for music facts and album matching. Optional IGDB metadata support accepts `IGDB_CLIENT_ID` and `IGDB_CLIENT_SECRET`. These credentials enable **Import factual metadata → IGDB** in the content studio; daily game imagery uses RAWG. Twitch tokens are requested server-side, shared across simultaneous searches and reused until shortly before expiry.
 
 ```sh
 yarn db:sync
@@ -53,6 +53,8 @@ One Frame starts with a black central rectangle covering 80% of the image’s ar
 Images reserve their layout space and show a skeleton until loaded. The hero, active clue and first browse previews load eagerly; remaining images load lazily with responsive sizes. Private clue URLs go directly to Veyli, preserving player cookies. Source and rendered image caches each retain at most 32 MiB for five minutes and share simultaneous work. Public thumbnails cache for 60 seconds with content revisions; private images revalidate with ETags after every access check. Completion changes the image URL when the reveal changes. Simultaneous JSON reads and repeated result-image downloads also share requests.
 
 Year-range preferences are saved in the browser and applied on the server. Eligible additional source rounds fill missing modes without replacing daily rounds or multiplying leaderboard scores. Narrow ranges can lack suitable approved imagery.
+
+When a modern movie round overlaps an older daily round, the lineup shows the modern card once for that mode. Original rounds remain stored for history and scoring.
 
 ## Content studio
 
