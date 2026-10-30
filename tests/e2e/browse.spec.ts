@@ -45,6 +45,51 @@ test('plays Music and Pop Culture through the common game interface', async ({ p
   }
 });
 
+test('shows navigation feedback and opens loaded challenges at the top', async ({ page }) => {
+  for (const category of ['music', 'movies']) {
+    const path = playPath('classic', category);
+    const api = `/api/challenges/${roundKey('classic', category)}`;
+    let releaseNavigation = () => {};
+    let releaseRound = () => {};
+    const navigation = new Promise<void>((resolve) => {
+      releaseNavigation = resolve;
+    });
+    const round = new Promise<void>((resolve) => {
+      releaseRound = resolve;
+    });
+    await page.route(`**${path}?*`, async (route) => {
+      await navigation;
+      await route.continue();
+    });
+    await page.route(`**${api}`, async (route) => {
+      await round;
+      await route.continue();
+    });
+    await page.goto('/');
+    const link =
+      category === 'music'
+        ? page.locator(`.challenge-tile[href="${path}"]`)
+        : page.getByRole('link', { name: 'Play today' });
+    try {
+      await link.click();
+      await expect(link.locator('.spin')).toBeVisible();
+      await expect(link.getByRole('status')).toHaveText('Loading challenge…');
+      const request = page.waitForRequest((request) => new URL(request.url()).pathname === api);
+      releaseNavigation();
+      await request;
+      await expect(page.getByRole('status').filter({ hasText: 'Setting the scene' })).toBeVisible();
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      releaseRound();
+      await expect(page.locator('.classic-frame img')).toBeVisible();
+      await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+      await expect(page.locator('.classic-frame')).toBeInViewport();
+    } finally {
+      releaseNavigation();
+      releaseRound();
+    }
+  }
+});
+
 test('persists the release-year filter without leaking hidden answer years', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('spinbutton', { name: 'From year' }).fill('2000');

@@ -2702,6 +2702,9 @@ h2 {
   color: white;
   transform: translateY(-3px);
 }
+.challenge-tile:active {
+  transform: scale(0.98);
+}
 .tile-visual {
   aspect-ratio: 1.55;
   height: auto;
@@ -2791,6 +2794,12 @@ h2 {
 .tile-play svg {
   margin-left: 3px;
 }
+.tile-play .spin {
+  margin-left: 0;
+}
+.play-indicator {
+  display: inline-flex;
+}
 .challenge-tile:hover .tile-play {
   transform: scale(1.1);
 }
@@ -2812,6 +2821,9 @@ h2 {
 }
 .tile-quote .tile-play {
   display: none;
+}
+.tile-quote .tile-play[data-pending="true"] {
+  display: grid;
 }
 .archive-banner {
   margin: 12px 0 56px;

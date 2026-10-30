@@ -1,8 +1,8 @@
 'use client';
-import { ArrowLeft, Check, HelpCircle, LoaderCircle, Quote as QuoteIcon, X } from 'lucide-react';
+import { ArrowLeft, Check, HelpCircle, Quote as QuoteIcon, X } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import LoadingImage from '@/components/LoadingImage';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -11,6 +11,7 @@ import { fetchJson } from '@/lib/fetch-json';
 import { type CatalogueItem, type GameState, gameStateSchema } from '../contracts';
 import AnswerSearch from './AnswerSearch';
 import Facts from './Facts';
+import GameLoading from './GameLoading';
 import Results from './Results';
 
 const messages: Record<string, string> = {
@@ -58,6 +59,10 @@ export default function Game({ challengeKey }: { challengeKey: string }) {
       active = false;
     };
   }, [load]);
+  useLayoutEffect(() => {
+    // The round replaces a shorter loading view; keep its image at the top on arrival.
+    if (!loading) window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [loading]);
   async function guess(item: CatalogueItem) {
     if (busy) return;
     setBusy(true);
@@ -89,13 +94,7 @@ export default function Game({ challengeKey }: { challengeKey: string }) {
       setBusy(false);
     }
   }
-  if (loading)
-    return (
-      <div className="game-loading" role="status">
-        <LoaderCircle className="spin" size={28} />
-        <p>Setting the scene…</p>
-      </div>
-    );
+  if (loading) return <GameLoading />;
   if (!state)
     return (
       <div className="page-shell narrow-shell">

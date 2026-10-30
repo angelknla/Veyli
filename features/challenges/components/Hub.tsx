@@ -8,6 +8,7 @@ import {
   Gamepad2,
   Image as ImageIcon,
   Layers,
+  LoaderCircle,
   Music,
   Play,
   Quote,
@@ -15,7 +16,7 @@ import {
   Sparkles,
   Tv,
 } from 'lucide-react';
-import Link from 'next/link';
+import Link, { useLinkStatus } from 'next/link';
 import { useEffect, useState } from 'react';
 import LoadingImage from '@/components/LoadingImage';
 import type { Challenge, HubData } from '@/features/game/contracts';
@@ -38,6 +39,23 @@ const icons: Record<string, typeof Film> = {
 export function CategoryIcon({ name, size = 20 }: { name: string; size?: number }) {
   const Icon = icons[name] || Sparkles;
   return <Icon size={size} strokeWidth={2} />;
+}
+function PlayIndicator({ size = 22, tile = false }: { size?: number; tile?: boolean }) {
+  const { pending } = useLinkStatus();
+  return (
+    <span className={tile ? 'tile-play' : 'play-indicator'} data-pending={pending}>
+      {pending ? (
+        <LoaderCircle className="spin" size={size} aria-hidden="true" />
+      ) : (
+        <Play size={size} fill="currentColor" aria-hidden="true" />
+      )}
+      {pending && (
+        <span className="sr-only" role="status">
+          Loading challenge…
+        </span>
+      )}
+    </span>
+  );
 }
 function Countdown() {
   const [time, setTime] = useState('00:00 UTC');
@@ -106,9 +124,7 @@ export function ChallengeTile({
           {challenge.yearRange && ` · ${challenge.yearRange.from}–${challenge.yearRange.to}`}
         </span>
         <span className="tile-number">#{String(challenge.number).padStart(3, '0')}</span>
-        <span className="tile-play" aria-hidden="true">
-          <Play size={26} fill="currentColor" />
-        </span>
+        <PlayIndicator tile size={26} />
         <div className="tile-overlay">
           <h3>{challenge.mode.name}</h3>
           <span>
@@ -336,7 +352,7 @@ export function HomeHub({ data }: { data: HubData }) {
               className="button button-primary"
               href={featured ? `/play/${featured.key}` : '/today'}
             >
-              <Play size={22} fill="currentColor" /> Play today
+              <PlayIndicator /> Play today
             </Link>
             <Link className="button button-secondary" href="#challenges">
               Browse challenges <ArrowRight size={20} />
