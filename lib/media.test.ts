@@ -1,7 +1,7 @@
 // @vitest-environment node
 import sharp from 'sharp';
 import { expect, it } from 'vitest';
-import { frameCover, musicCrop } from '@/features/game/presentation';
+import { frameCover } from '@/features/game/presentation';
 import { renderClueImage } from './media';
 
 it('bakes a shrinking black centre into the image and uncovers it after completion', async () => {
@@ -56,21 +56,18 @@ it.each([
   expect(black(Math.floor(info.width / 2), Math.floor(info.height / 2))).toBe(true);
   expect(black(0, 0)).toBe(false);
 });
-it('starts Music Classic at a tight crop and zooms out on each attempt, with the full image on completion', async () => {
+it('keeps an authored centre crop proportional to the source image', async () => {
   const source = await sharp({
     create: { width: 600, height: 900, channels: 3, background: '#ffffff' },
   })
     .png()
     .toBuffer();
   const widths: number[] = [];
-  for (let attempt = 0; attempt < 8; attempt++) {
-    const image = await renderClueImage(source, { cropPercent: musicCrop(attempt, 8) });
+  for (const cropPercent of [10, 25, 50, 100]) {
+    const image = await renderClueImage(source, { cropPercent });
     widths.push((await sharp(image).metadata()).width!);
   }
-  expect(widths[0]).toBe(60);
-  expect(widths.at(-1)).toBe(600);
-  for (let i = 1; i < widths.length; i++) expect(widths[i]).toBeGreaterThan(widths[i - 1]);
-  expect(musicCrop(1, 8, true)).toBe(100);
+  expect(widths).toEqual([60, 150, 300, 600]);
 });
 
 it('renders smaller responsive images, reuses matching renders and invalidates changed content', async () => {

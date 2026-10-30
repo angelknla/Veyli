@@ -370,62 +370,6 @@ fieldset.clueNavigation {
 .guessHistoryList svg {
   flex-shrink: 0;
 }
-@media (min-width: 1000px) {
-  .gameLayoutClassic .gameControls {
-    contain: size;
-    align-self: stretch;
-    height: 100%;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    padding-top: 0;
-  }
-  .gameLayoutClassic .classicFrame {
-    width: 100%;
-    min-width: 0;
-    min-height: 460px;
-  }
-  .gameLayoutClassic .attemptSummary {
-    flex-shrink: 0;
-  }
-  .gameLayoutClassic .attemptDots {
-    flex-shrink: 0;
-  }
-  .gameLayoutClassic .inlineError {
-    flex-shrink: 0;
-  }
-  .gameLayoutClassic .attemptDots {
-    margin: 12px 0 16px;
-  }
-  .gameLayoutClassic .guessHistory {
-    min-height: 84px;
-    padding-top: 14px;
-    flex: 0 1 auto;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-  .gameLayoutClassic .guessHistory > .eyebrow {
-    padding-bottom: 6px;
-  }
-  .gameLayoutClassic .guessHistoryList {
-    max-height: 78px;
-    min-height: 0;
-    flex: 1;
-  }
-  .gameLayoutFinished.gameLayoutClassic .gameControls {
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-}
-@media (max-width: 999px) {
-  .gameLayoutClassic {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-.classicFrame {
-  margin-bottom: 0;
-}
 .clueStage img {
   object-fit: contain;
 }

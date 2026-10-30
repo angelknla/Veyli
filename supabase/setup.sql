@@ -316,7 +316,7 @@ insert into public.veyli_categories (id,slug,name,description,accent,icon,active
 ('296ce632-6c16-5556-a4b0-b0444e6ad724','pop-culture','Pop culture','Characters and icons from the worlds you love.','#ef9cae','sparkles',true,4)
 on conflict (id) do nothing;
 insert into public.veyli_modes (id,slug,name,description,icon,initial_clues,clues_per_miss,default_attempts,default_scores,position) values
-('f14a2b8b-42c6-5d35-bb12-72f1be8f3043','classic','Classic','One frame. Year. Genre. Director. A new fact after every miss.','layers',1,1,8,'{1000,800,650,500,400,300,200,100}',0),
+('f14a2b8b-42c6-5d35-bb12-72f1be8f3043','classic','Classic','One scene from the story. A new scene and a new fact after every miss.','layers',1,1,8,'{1000,800,650,500,400,300,200,100}',0),
 ('abf17059-47f0-500c-a7f9-14dd7b026f5e','one-frame','One Frame','One shot. The block shrinks with each miss.','scan',1,0,8,'{1000,800,650,500,400,300,200,100}',1),
 ('cacab9a3-c6a8-5dd0-b570-2ba0d3dc59d0','poster','Poster','A familiar artwork, a different perspective.','image',1,1,8,'{1000,800,650,500,400,300,200,100}',2),
 ('dd9d35ac-53a5-5cff-97ed-218900afe974','quote','Quote','Words you might know. A source to discover.','quote',1,1,8,'{1000,800,650,500,400,300,200,100}',3)

@@ -83,7 +83,7 @@ export const ChallengeTile = ({
         {challenge.mode.slug === 'quote'
           ? 'WHO SAID IT?'
           : challenge.mode.slug === 'classic'
-            ? 'KNOW YOUR FACTS?'
+            ? 'SPOT THE SCENE?'
             : 'READY PLAYER?'}
       </span>
     </div>

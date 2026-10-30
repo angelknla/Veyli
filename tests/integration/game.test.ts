@@ -4,6 +4,7 @@ import { afterAll, beforeAll, beforeEach, expect, it } from 'vitest';
 import { mergeLineup } from '@/features/challenges/lineup';
 import type { Challenge, GameState } from '@/features/game/contracts';
 import { GameEngine, normalizeTitle } from '@/features/game/engine';
+import { answerFacts } from '../fixtures/catalogue';
 import { callRpc, copyRound, createTestDatabase } from '../support/postgres';
 
 let db: PGlite;
@@ -30,11 +31,11 @@ afterAll(async () => {
 it('returns stable daily puzzles without answers, media paths or internal IDs', async () => {
   const hub = await invoke<{ challenges: unknown[] }>('veyli_hub');
   expect(await invoke('veyli_hub')).toEqual(hub);
-  expect(hub.challenges).toHaveLength(12);
+  expect(hub.challenges).toHaveLength(10);
   expect(JSON.stringify(hub)).not.toMatch(/answer_id|accepted_answer_ids|storage_path|password/);
 });
 
-it('reveals facts after misses, persists the winning score and prevents replay', async () => {
+it('reveals another scene and fact after a miss, persists the winning score and prevents replay', async () => {
   const digest = player();
   const initial = await engine.open(digest, key());
   expect(initial).toMatchObject({ answer: null, score: 0, attemptsUsed: 0 });
@@ -43,7 +44,9 @@ it('reveals facts after misses, persists the winning score and prevents replay',
   expect(initial).not.toHaveProperty('sessionId');
   const miss = await engine.guess(digest, key(), 'inception-2010');
   expect(miss).toMatchObject({ status: 'in_progress', attemptsUsed: 1, answer: null });
-  expect(miss.clues[1]).toMatchObject({ kind: 'text', text: 'Year: 1922' });
+  expect(miss.clues).toHaveLength(2);
+  expect(miss.clues[1]).toMatchObject({ position: 2, kind: 'image', text: 'Year: 1922' });
+  expect(miss.clues[1].imageUrl).toBe(`/api/challenges/${key()}/media/2`);
   expect(miss.clues[0]).toEqual(initial.clues[0]);
   const win = await engine.guess(digest, key(), 'nosferatu-1922');
   expect(win).toMatchObject({ status: 'won', score: 800, answer: { title: 'Nosferatu' } });
@@ -100,7 +103,7 @@ it('keeps Classic and One Frame answers distinct in every category and date', as
     join public.veyli_challenges b on b.category_id=a.category_id and b.release_date=a.release_date
     join public.veyli_modes bm on bm.id=b.mode_id
     where am.slug='classic' and bm.slug='one-frame'`);
-  expect(rows).toHaveLength(15);
+  expect(rows).toHaveLength(9);
   expect(rows.every((pair) => !pair.same)).toBe(true);
   const digest = player();
   const initial = await engine.open(digest, key('one-frame'));
@@ -120,6 +123,49 @@ it('authorises only revealed Poster media and clears it after completion', async
   expect(await access(2)).not.toBeNull();
   await engine.guess(digest, key('poster'), 'trip-to-the-moon-1902');
   expect(await access(1)).toMatchObject({ blur: 0, cropPercent: 100 });
+});
+
+it('authorises only the Classic scenes the player has reached', async () => {
+  const digest = player();
+  await engine.open(digest, key());
+  const access = (position: number) =>
+    invoke<{ storagePath: string } | null>('veyli_media_access', [digest, key(), position]);
+  expect(await access(1)).toMatchObject({ blur: 0, cropPercent: 100 });
+  expect(await access(2)).toBeNull();
+  await engine.guess(digest, key(), 'inception-2010');
+  expect(await access(2)).not.toBeNull();
+  expect(await access(3)).toBeNull();
+  // Each attempt opens a different scene of the same title.
+  const reached = await Promise.all([1, 2].map(access));
+  expect(new Set(reached.map((scene) => scene?.storagePath)).size).toBe(2);
+});
+
+it('unlocks one more scene and one more fact on every Classic miss', async () => {
+  const digest = player();
+  const opening = await engine.open(digest, key());
+  // The opening scene arrives without a fact.
+  expect(opening.clues).toHaveLength(1);
+  expect(opening.clues[0]).toMatchObject({ kind: 'image', text: null });
+  const facts = answerFacts['nosferatu-1922'];
+  for (const [index, slug] of [
+    'inception-2010',
+    'matrix-1999',
+    'interstellar-2014',
+    'arrival-2016',
+    'dune-2021',
+    'nosferatu-2024',
+    'caligari-1920',
+  ].entries()) {
+    const state = await engine.guess(digest, key(), slug);
+    expect(state.clues.every((clue) => clue.kind === 'image')).toBe(true);
+    expect(state.clues.map((clue) => clue.imageUrl)).toEqual(
+      Array.from(
+        { length: index + 2 },
+        (_, position) => `/api/challenges/${key()}/media/${position + 1}`
+      )
+    );
+    expect(state.clues.map((clue) => clue.text).filter(Boolean)).toEqual(facts.slice(0, index + 1));
+  }
 });
 
 it.each([

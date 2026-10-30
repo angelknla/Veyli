@@ -28,12 +28,17 @@ export const fixtureImage = (storagePath: string): Promise<Buffer> => {
     process.env.VERCEL
   )
     throw new Error('integration_media_disabled');
-  const name = /^admin\/test-([a-z-]+)\.jpg$/.exec(storagePath)?.[1];
-  if (!name || !names.has(name)) throw new Error('unknown_fixture_media');
+  const name = /^admin\/test-([a-z0-9-]+)\.jpg$/.exec(storagePath)?.[1];
+  // Classic scenes are numbered variants of a title's frame, each rendered differently.
+  const base = name?.replace(/-scene-\d+$/, '');
+  if (!name || !base || !names.has(base)) throw new Error('unknown_fixture_media');
   if (!images.has(name)) {
-    const width = portraits.has(name) ? 480 : 800;
-    const height = portraits.has(name) ? 720 : 450;
-    const seed = [...name].reduce((sum, letter) => sum + letter.charCodeAt(0), 0);
+    const width = portraits.has(base) ? 480 : 800;
+    const height = portraits.has(base) ? 720 : 450;
+    // Space the scenes well apart so each reveal is visibly a different image.
+    const scene = Number(/-scene-(\d+)$/.exec(name)?.[1] || 0);
+    const seed =
+      ([...base].reduce((sum, letter) => sum + letter.charCodeAt(0), 0) + scene * 40) % 256;
     const pixels = Buffer.alloc(width * height * 3);
     for (let y = 0; y < height; y++)
       for (let x = 0; x < width; x++) {

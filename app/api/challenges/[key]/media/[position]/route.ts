@@ -28,8 +28,6 @@ export const GET = async (
     if (!player) return json({ error: 'not_found' }, 404);
     await rateLimit(request, 'media', player);
     const state = await engine.open(player, key);
-    if (state.challenge.mode.slug === 'classic' && index !== 1)
-      return json({ error: 'not_found' }, 404);
     const result = await rpc('veyli_media_access', {
       player_digest: player,
       challenge_key: key,
@@ -42,7 +40,6 @@ export const GET = async (
       ...clueImageOptions(
         {
           mode: state.challenge.mode.slug,
-          category: state.challenge.category.slug,
           attemptsUsed: state.challenge.mode.slug === 'poster' ? index - 1 : state.attemptsUsed,
           attemptLimit: state.challenge.attemptLimit,
           complete: state.status !== 'in_progress',

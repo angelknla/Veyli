@@ -20,8 +20,8 @@ const About = () => {
         </h2>
         <ul>
           <li>
-            <strong>Classic:</strong> keep a frame on screen. Each miss adds a fact such as year,
-            genre, director or cast.
+            <strong>Classic:</strong> open on one scene from the story. Each miss shows a different
+            scene of the same title and unlocks a fact such as year, genre or director.
           </li>
           <li>
             <strong>One Frame:</strong> one image with a black rectangle in its centre. Each miss

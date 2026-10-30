@@ -2,12 +2,13 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { challengeInput } from '../admin/contracts';
 import { importCatalogue, sourceSlug } from './catalogue-import';
 import { imageUseAllowed, importImage } from './media-import';
-import { sourceModeImage } from './scene-images';
+import { classicScenes, minimumScenes, sourceModeImages } from './scene-images';
 import { clueSignature, dailyModes, orderedPool, sourceClues } from './schedule';
 import {
   discoverScreenTitles,
   hydrateScreenTitle,
   type SourceCategory,
+  type SourceImage,
   type SourceTitle,
 } from './source-client';
 import { discoverWikimedia, hydrateWikimediaTitle, sourceCategories } from './wikimedia';
@@ -146,9 +147,8 @@ const runSync = async (db: SupabaseClient, options: SyncOptions): Promise<SyncRe
     for (const row of played.data) locked.add(row.challenge_id);
   }
   const mediaCache = new Map<string, string | null>();
-  const importAsset = async (item: SourceTitle, mode: string) => {
-    const image = sourceModeImage(item, mode);
-    if (!image || !imageUseAllowed(image)) return null;
+  const importAsset = async (image: SourceImage) => {
+    if (!imageUseAllowed(image)) return null;
     if (mediaCache.has(image.url)) return mediaCache.get(image.url)!;
     try {
       const id = await importImage(db, image);
@@ -159,6 +159,16 @@ const runSync = async (db: SupabaseClient, options: SyncOptions): Promise<SyncRe
       mediaCache.set(image.url, null);
       return null;
     }
+  };
+  /** Classic needs its whole run of scenes; a short run leaves the day without the mode. */
+  const importAssets = async (item: SourceTitle, mode: string) => {
+    const images = mode === 'classic' ? classicScenes(item) : sourceModeImages(item, mode);
+    const assets: string[] = [];
+    for (const image of images) {
+      const id = await importAsset(image);
+      if (id) assets.push(id);
+    }
+    return mode === 'classic' && assets.length < minimumScenes ? [] : assets;
   };
   for (let offset = 0; offset <= (options.days ?? 30); offset++) {
     const day = new Date(`${today}T00:00:00Z`);
@@ -187,8 +197,8 @@ const runSync = async (db: SupabaseClient, options: SyncOptions): Promise<SyncRe
         }
         const answer = imported.get(sourceSlug(item));
         if (!answer) continue;
-        const mediaId = await importAsset(item, name);
-        if (!mediaId) continue;
+        const assets = await importAssets(item, name);
+        if (!assets.length) continue;
         const payload = challengeInput.parse({
           ...(current ? { id: current.id } : {}),
           category_id: categoryRow.id,
@@ -200,7 +210,7 @@ const runSync = async (db: SupabaseClient, options: SyncOptions): Promise<SyncRe
           difficulty: 'medium',
           attempt_limit: 8,
           scores: [1000, 800, 650, 500, 400, 300, 200, 100],
-          clues: sourceClues(name, mediaId, item.facts, item.title, item.year),
+          clues: sourceClues(name, assets, item.facts),
         });
         if (
           current?.answer_id === answer.id &&

@@ -3,14 +3,18 @@ import { sourceImage, sourceTitle } from '@/tests/fixtures/sources';
 import { rangePicks } from './range-rounds';
 import type { SourceImage } from './source-client';
 
-const image = (role: SourceImage['role']) => sourceImage({ role, policy: 'commons' });
+const image = (role: SourceImage['role'], id: string = role) =>
+  sourceImage({ role, policy: 'commons', url: `https://upload.wikimedia.org/${id}.jpg` });
+// Classic spends a scene per attempt, so only a title with a run of frames qualifies for it.
+const sceneRun = (id: string) =>
+  Array.from({ length: 4 }, (_, index) => image('frame', `${id}-${index}`));
 const title = (id: string, images: SourceImage[]) =>
   sourceTitle(id, { title: id, year: 2010, provider: 'wikidata', images });
 it('keeps ranged modes distinct, excludes existing daily answers and uses covers only for Poster', () => {
   const items = [
-    title('current', [image('frame')]),
-    title('frame-a', [image('frame')]),
-    title('frame-b', [image('frame')]),
+    title('current', sceneRun('current')),
+    title('frame-a', sceneRun('frame-a')),
+    title('frame-b', sceneRun('frame-b')),
     title('cover', [image('poster')]),
   ];
   const picks = rangePicks(

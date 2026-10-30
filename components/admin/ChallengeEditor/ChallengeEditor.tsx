@@ -220,7 +220,7 @@ const ChallengeEditor = ({
               {clue.kind === 'text' ? (
                 <Field
                   name={`text-${index}`}
-                  label={mode?.slug === 'classic' ? 'Fact (for example Year: 1922)' : 'Clue text'}
+                  label="Clue text"
                   type="textarea"
                   value={clue.text_content}
                   onChange={(_, value) => changeClue(index, 'text_content', value)}
@@ -240,6 +240,15 @@ const ChallengeEditor = ({
                   onChange={(_, value) => changeClue(index, 'media_id', value)}
                 />
               )}{' '}
+              {clue.kind === 'image' && mode?.slug === 'classic' && index > 0 && (
+                <Field
+                  name={`text-${index}`}
+                  label="Fact unlocked by this scene (Year: 1922)"
+                  type="textarea"
+                  value={clue.text_content}
+                  onChange={(_, value) => changeClue(index, 'text_content', value)}
+                />
+              )}
               {clue.kind === 'image' && (
                 <>
                   <Field
@@ -271,7 +280,7 @@ const ChallengeEditor = ({
       </div>
       <div className={styles.editorAddActions}>
         {(mode?.slug === 'classic'
-          ? ['text']
+          ? ['image']
           : mode?.slug === 'one-frame'
             ? []
             : ['image', 'text', 'quote']

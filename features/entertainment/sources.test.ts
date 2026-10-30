@@ -8,6 +8,7 @@ import {
   searchSourceTitles,
   sourceJson,
   televisionScene,
+  televisionScenes,
 } from './source-client';
 import { commonsImage, hydrateWikimediaTitle, permittedCommonsLicense } from './wikimedia';
 
@@ -26,6 +27,7 @@ it('uses an aired episode still for TV frame modes while preserving the series p
             { episode_number: 1, air_date: '2099-01-01', still_path: '/unreleased.jpg' },
             { episode_number: 2, air_date: '2000-01-01', still_path: null },
             { episode_number: 3, air_date: '2000-01-02', still_path: '/aired-scene.jpg' },
+            { episode_number: 4, air_date: '2000-01-03', still_path: '/second-scene.jpg' },
           ],
         });
       return Response.json({
@@ -41,10 +43,13 @@ it('uses an aired episode still for TV frame modes while preserving the series p
   const result = await hydrateScreenTitle(item);
   expect(result.images.map((image) => image.url)).toEqual([
     'https://image.tmdb.org/t/p/w1280/aired-scene.jpg',
+    'https://image.tmdb.org/t/p/w1280/second-scene.jpg',
     'https://image.tmdb.org/t/p/w1280/series-poster.jpg',
   ]);
   expect(result.images[0].episode).toEqual({ season: 1, number: 3 });
   expect(result.images[0].sceneVerified).toBe(true);
+  expect(await televisionScene(item, 1)).toEqual(result.images[0]);
+  expect((await televisionScenes(item, 1)).map((image) => image.episode?.number)).toEqual([3, 4]);
 });
 it('skips promotional TV backdrops when an aired episode still is unavailable', async () => {
   vi.stubEnv('TMDB_API_KEY', 'test-secret');
@@ -137,26 +142,37 @@ it('searches multiple provider pages rather than narrowing suggestions to the fi
   expect(items).toHaveLength(60);
   expect(new Set(items.map((item) => item.providerId)).size).toBe(60);
 });
-it('builds eight-attempt Classic clues with the frame retained and One Frame with a single image', () => {
-  const facts = [
-    { label: 'Year', value: '2000' },
-    { label: 'Director', value: 'A director' },
-  ];
-  const classic = sourceClues(
-    'classic',
-    '7ce97a14-8c28-4f84-96a5-1152055b7626',
-    facts,
-    'Example movie',
-    2000
-  );
-  expect(classic).toHaveLength(8);
-  expect(classic[0]).toMatchObject({ kind: 'image', presentation: 'full' });
-  expect(classic.slice(1).every((clue) => clue.kind === 'text')).toBe(true);
+it('pairs every Classic scene after the first with the fact that miss unlocks', () => {
+  const scenes = Array.from({ length: 8 }, (_, index) => `scene-${index + 1}`);
+  const facts = Array.from({ length: 7 }, (_, index) => ({
+    label: `Label ${index + 1}`,
+    value: `Value ${index + 1}`,
+  }));
+  const classic = sourceClues('classic', scenes, facts);
+  expect(classic.every((clue) => clue.kind === 'image' && clue.presentation === 'full')).toBe(true);
   expect(classic.map((clue) => clue.position)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
-  expect(sourceClues('one-frame', 'asset', facts)).toHaveLength(1);
-  expect(sourceClues('poster', 'asset', facts).map((clue) => clue.blur_amount)).toEqual([
+  expect(classic.map((clue) => clue.media_id)).toEqual(scenes);
+  // The opening scene carries no fact; each later one carries exactly the miss that earned it.
+  expect(classic.map((clue) => clue.text_content)).toEqual([
+    null,
+    'Label 1: Value 1',
+    'Label 2: Value 2',
+    'Label 3: Value 3',
+    'Label 4: Value 4',
+    'Label 5: Value 5',
+    'Label 6: Value 6',
+    'Label 7: Value 7',
+  ]);
+  const short = sourceClues('classic', scenes.slice(0, 4), facts);
+  expect(short.map((clue) => clue.position)).toEqual([1, 2, 3, 4]);
+  expect(sourceClues('classic', scenes).map((clue) => clue.text_content)).toEqual(
+    scenes.map(() => null)
+  );
+  expect(sourceClues('one-frame', scenes)).toHaveLength(1);
+  expect(sourceClues('poster', scenes).map((clue) => clue.blur_amount)).toEqual([
     30, 20, 13, 8, 5, 3, 1, 0,
   ]);
+  expect(sourceClues('poster', scenes).every((clue) => clue.media_id === 'scene-1')).toBe(true);
 });
 it('requires the configured TMDB usage policy and only downloads from approved image hosts', () => {
   const image = sourceImage();
@@ -234,41 +250,41 @@ it('does not claim an album is a debut when the provider catalogue is incomplete
   expect(result.year).toBe(1990);
   expect(result.facts[0]).toEqual({ label: 'Album', value: 'A later album (2012)' });
 });
-it('detects factual clue updates even when the answer and image remain the same', () => {
-  const before = sourceClues('classic', 'same-image', [
-    { label: 'Director', value: 'Previous credit' },
-  ]);
-  const after = sourceClues('classic', 'same-image', [
-    { label: 'Director', value: 'Corrected credit' },
-  ]);
+it('detects a replaced Classic scene or a corrected fact even when the answer stays the same', () => {
+  const scenes = ['opening', 'second-scene', 'third', 'fourth'];
+  const before = sourceClues('classic', scenes, [{ label: 'Director', value: 'Previous credit' }]);
+  const after = sourceClues('classic', scenes, [{ label: 'Director', value: 'Corrected credit' }]);
+  // The scene run and the fact run both feed the signature.
+  const replaced = sourceClues('classic', ['opening', 'corrected-scene', 'third', 'fourth']);
   expect(clueSignature(before)).not.toBe(clueSignature(after));
+  expect(clueSignature(before)).not.toBe(clueSignature(replaced));
   expect(clueSignature(before)).toBe(clueSignature(before.map((clue) => ({ ...clue }))));
 });
-it('adds Poster for TV, games and music only when artwork exists, while keeping core daily answers stable', () => {
-  const image = sourceImage({
+it('schedules Classic only on an answer with a run of scenes, adding Poster when artwork exists', () => {
+  const cover = sourceImage({
     role: 'poster',
     policy: 'commons',
     url: 'https://upload.wikimedia.org/cover.jpg',
     license: 'CC0',
   });
-  for (const category of ['television', 'games', 'music'] as const) {
+  const scenes = (category: string, id: number, count: number) =>
+    Array.from({ length: count }, (_, index) => ({
+      ...sourceImage({ url: `https://image.tmdb.org/t/p/w1280/scene-${id}-${index}.jpg` }),
+      role: 'frame' as const,
+      ...(category === 'television'
+        ? { sceneVerified: true, episode: { season: 1, number: index + 1 } }
+        : {}),
+    }));
+  for (const category of ['television', 'games'] as const) {
     const pool = Array.from({ length: 8 }, (_, id) => ({
       ...title(id),
       category,
-      images: [
-        {
-          ...image,
-          role: 'frame' as const,
-          ...(category === 'television'
-            ? { sceneVerified: true, episode: { season: 1, number: 1 } }
-            : {}),
-        },
-      ],
+      images: scenes(category, id, 4),
     }));
     const before = dailyModes(pool, '2026-10-30', category);
     expect(before.map((pick) => pick.mode)).toEqual(['classic', 'one-frame']);
     const after = dailyModes(
-      pool.map((item) => ({ ...item, images: [...item.images, image] })),
+      pool.map((item) => ({ ...item, images: [...item.images, cover] })),
       '2026-10-30',
       category
     );
@@ -277,13 +293,33 @@ it('adds Poster for TV, games and music only when artwork exists, while keeping 
       before.map((pick) => pick.item.providerId)
     );
     expect(new Set(after.map((pick) => pick.item.providerId)).size).toBe(3);
+    // A single frame still carries One Frame and Poster, but never a scene-per-miss round.
+    const thin = dailyModes(
+      pool.map((item) => ({ ...item, images: [item.images[0], cover] })),
+      '2026-10-30',
+      category
+    );
+    expect(thin.map((pick) => pick.mode)).toEqual(['one-frame', 'poster']);
+  }
+  // Music and Pop culture have no scenes to reveal, so Classic is never scheduled for them.
+  for (const [category, modes] of [
+    ['music', ['one-frame', 'poster']],
+    ['pop-culture', ['one-frame']],
+  ] as const) {
+    const pool = Array.from({ length: 8 }, (_, id) => ({
+      ...title(id),
+      category,
+      provider: 'wikidata' as const,
+      images: [...scenes(category, id, 4), cover],
+    }));
+    expect(dailyModes(pool, '2026-10-30', category).map((pick) => pick.mode)).toEqual(modes);
   }
   expect(
     dailyModes(
       [title(1), title(2)].map((item) => ({
         ...item,
         provider: 'wikidata' as const,
-        images: [{ ...image, role: 'frame' as const }],
+        images: scenes('movies', Number(item.providerId), 4),
       })),
       '2026-10-30',
       'movies'

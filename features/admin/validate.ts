@@ -1,4 +1,5 @@
 import type { z } from 'zod';
+import { classicSceneClues } from '@/features/game/presentation';
 import type { AdminSnapshot, challengeInput } from './contracts';
 /** Presentation constraints live at this editorial boundary; the engine stays generic. */
 export const validatePublication = (
@@ -9,9 +10,10 @@ export const validatePublication = (
   if (!mode) throw new Error('invalid_mode');
   if (payload.status === 'draft') return;
   const rules: Record<string, () => boolean> = {
+    // Every Classic clue is a scene; the ones past the first also carry that miss's fact.
     classic: () =>
-      payload.clues[0].kind === 'image' &&
-      payload.clues.slice(1).every((clue) => clue.kind === 'text'),
+      payload.clues.length <= classicSceneClues &&
+      payload.clues.every((clue) => clue.kind === 'image'),
     'one-frame': () => payload.clues.length === 1 && payload.clues[0].kind === 'image',
     poster: () => payload.clues.every((clue) => clue.kind === 'image'),
     quote: () => payload.clues[0].kind === 'quote',

@@ -28,6 +28,12 @@ const messages: Record<string, string> = {
   challenge_unavailable: 'This challenge is not available.',
   database_unavailable: 'The puzzles are temporarily unavailable. Please try again.',
 };
+/** Classic keeps its facts out of the clue stage; they belong to the reveal. */
+const stageClues = (state: GameState) =>
+  state.challenge.mode.slug === 'classic'
+    ? state.clues.filter((clue) => clue.kind === 'image')
+    : state.clues;
+
 const Game = ({ challengeKey }: { challengeKey: string }) => {
   const [state, setState] = useState<GameState | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +47,7 @@ const Game = ({ challengeKey }: { challengeKey: string }) => {
         const result = gameStateSchema.parse(await fetchJson(`/api/challenges/${challengeKey}`));
         if (!isCurrent()) return;
         setState(result);
-        setSelectedClue(Math.max(0, result.clues.length - 1));
+        setSelectedClue(Math.max(0, stageClues(result).length - 1));
         recordCompletion(result);
         setError('');
       } catch (failure) {
@@ -87,7 +93,7 @@ const Game = ({ challengeKey }: { challengeKey: string }) => {
       }
       const result = gameStateSchema.parse(data);
       setState(result);
-      setSelectedClue(Math.max(0, result.clues.length - 1));
+      setSelectedClue(Math.max(0, stageClues(result).length - 1));
       recordCompletion(result);
     } catch (failure) {
       if (failure instanceof TypeError) {
@@ -124,7 +130,8 @@ const Game = ({ challengeKey }: { challengeKey: string }) => {
         </div>
       </div>
     );
-  const clue = state.clues[selectedClue] || state.clues[0];
+  const clues = stageClues(state);
+  const clue = clues[selectedClue] || clues[0];
   return (
     <div className={cn(sharedStyles.pageShell, styles.gameShell)}>
       <div className={styles.gameTopline}>
@@ -182,95 +189,72 @@ const Game = ({ challengeKey }: { challengeKey: string }) => {
         data-finished={state.status !== 'in_progress'}
         className={cn(
           styles.gameLayout,
-          state.challenge.mode.slug === 'classic' ? styles.gameLayoutClassic : undefined,
           state.status === 'in_progress' ? styles.gameLayoutActive : styles.gameLayoutFinished
         )}
       >
         <section className={styles.clueSection} aria-label="Revealed clues">
-          {state.challenge.mode.slug === 'classic' ? (
-            <div className={styles.classicClues}>
-              {state.clues[0]?.imageUrl && (
-                <div
-                  className={cn(styles.clueStage, styles.classicFrame)}
-                  data-testid="clue-stage classic-frame"
-                >
-                  <LoadingImage
-                    src={state.clues[0].imageUrl}
-                    alt="The frame for this mystery"
-                    fill
-                    sizes="(max-width: 850px) 92vw, (max-width: 1100px) 50vw, 58vw"
-                    loading="eager"
-                    fetchPriority="high"
-                  />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={clue?.imageUrl || clue?.position}
+              className={cn(
+                styles.clueStage,
+                clue?.kind === 'image' ? styles.clueImage : styles.clueWords
+              )}
+              data-testid={`clue-stage ${clue?.kind === 'image' ? 'clue-image' : 'clue-words'}`}
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduceMotion ? undefined : { opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              {clue?.kind === 'image' && clue.imageUrl ? (
+                <LoadingImage
+                  src={clue.imageUrl}
+                  alt={`Visual clue ${clue.position} for this entertainment mystery`}
+                  fill
+                  sizes="(max-width: 850px) 92vw, (max-width: 1100px) 50vw, 58vw"
+                  loading="eager"
+                  fetchPriority="high"
+                />
+              ) : (
+                <div>
+                  <QuoteIcon size={34} />
+                  <blockquote>{clue?.text}</blockquote>
+                  <span>
+                    {clue?.kind === 'quote' ? 'A line from the source' : 'A little more context'}
+                  </span>
                 </div>
               )}
-            </div>
-          ) : (
-            <>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={clue?.imageUrl || clue?.position}
-                  className={cn(
-                    styles.clueStage,
-                    clue?.kind === 'image' ? styles.clueImage : styles.clueWords
-                  )}
-                  data-testid={`clue-stage ${clue?.kind === 'image' ? 'clue-image' : 'clue-words'}`}
-                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduceMotion ? undefined : { opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  {clue?.kind === 'image' && clue.imageUrl ? (
-                    <LoadingImage
-                      src={clue.imageUrl}
-                      alt={`Visual clue ${clue.position} for this entertainment mystery`}
-                      fill
-                      sizes="(max-width: 850px) 92vw, (max-width: 1100px) 50vw, 58vw"
-                      loading="eager"
-                      fetchPriority="high"
-                    />
-                  ) : (
-                    <div>
-                      <QuoteIcon size={34} />
-                      <blockquote>{clue?.text}</blockquote>
-                      <span>
-                        {clue?.kind === 'quote'
-                          ? 'A line from the source'
-                          : 'A little more context'}
-                      </span>
-                    </div>
-                  )}
-                  <span className={styles.clueCaption}>
-                    CLUE {clue?.position || 1} / {state.clues.length} REVEALED
-                  </span>
-                </motion.div>
-              </AnimatePresence>
-              <fieldset className={styles.clueNavigation} aria-label="Choose a revealed clue">
-                {state.clues.map((value, index) => (
-                  <button
-                    key={value.position}
-                    type="button"
-                    aria-label={`Show clue ${value.position}`}
-                    aria-pressed={selectedClue === index}
-                    onClick={() => {
-                      setSelectedClue(index);
-                    }}
-                  >
-                    {String(value.position).padStart(2, '0')}
-                  </button>
-                ))}
-                {state.status === 'in_progress' && (
-                  <span>
-                    {state.challenge.mode.slug === 'one-frame'
-                      ? 'The block shrinks after a miss.'
-                      : state.challenge.mode.progressive
-                        ? 'More clues after a miss.'
-                        : 'One frame. Make it count.'}
-                  </span>
-                )}
-              </fieldset>
-            </>
-          )}
+              <span className={styles.clueCaption}>
+                CLUE {clue?.position || 1} / {clues.length} REVEALED
+              </span>
+            </motion.div>
+          </AnimatePresence>
+          <fieldset className={styles.clueNavigation} aria-label="Choose a revealed clue">
+            {clues.map((value, index) => (
+              <button
+                key={value.position}
+                type="button"
+                aria-label={`Show clue ${value.position}`}
+                aria-pressed={selectedClue === index}
+                onClick={() => {
+                  setSelectedClue(index);
+                }}
+              >
+                {String(value.position).padStart(2, '0')}
+              </button>
+            ))}
+            {state.status === 'in_progress' && (
+              <span>
+                {state.challenge.mode.slug === 'one-frame'
+                  ? 'The block shrinks after a miss.'
+                  : state.challenge.mode.slug === 'classic'
+                    ? 'A new scene after a miss.'
+                    : state.challenge.mode.progressive
+                      ? 'More clues after a miss.'
+                      : 'One frame. Make it count.'}
+              </span>
+            )}
+          </fieldset>
         </section>
         <div className={styles.gameControls}>
           {state.status === 'in_progress' ? (

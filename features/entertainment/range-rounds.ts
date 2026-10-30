@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { YearRange } from '../challenges/years';
 import { type Challenge, challengeSchema, type HubData } from '../game/contracts';
 import { imageUseAllowed, importImage } from './media-import';
-import { sourceModeImage } from './scene-images';
+import { classicScenes, sceneCategories, sourceModeImages } from './scene-images';
 import { dailyPicks, sourceClues } from './schedule';
 import type { SourceCategory, SourceTitle } from './source-client';
 
@@ -76,8 +76,12 @@ export const rangePicks = (
   const chosen = new Set(blocked);
   return modes.flatMap((mode) => {
     const pool = items.filter((item) => {
-      const image = sourceModeImage(item, mode);
-      return !chosen.has(identity(item)) && image && imageUseAllowed(image);
+      const images = modeImages(item, mode);
+      return (
+        !chosen.has(identity(item)) &&
+        images.length > 0 &&
+        images.every((image) => imageUseAllowed(image))
+      );
     });
     const item = dailyPicks(pool, day, 1)[0];
     if (!item) return [];
@@ -87,6 +91,9 @@ export const rangePicks = (
 };
 const identity = (item: Pick<SourceTitle, 'title' | 'year'>) =>
   `${item.title.toLowerCase()}:${item.year}`;
+/** Classic spends a scene per attempt, so an answer only qualifies with the whole run. */
+const modeImages = (item: SourceTitle, mode: string) =>
+  mode === 'classic' ? classicScenes(item) : sourceModeImages(item, mode);
 
 export const sourceRangeRounds = (
   db: SupabaseClient,
@@ -169,7 +176,7 @@ const createRounds = async (
     );
     if (!publicCategory) continue;
     let desired = [
-      'classic',
+      ...(sceneCategories.includes(category.slug) ? ['classic'] : []),
       'one-frame',
       ...(category.slug === 'pop-culture' ? [] : ['poster']),
     ].filter(
@@ -245,15 +252,18 @@ const createRounds = async (
       const key = `${date}-${category.slug}-${name}-range-${hash}`;
       let round = await availableRangeRound(db, key);
       if (!round) {
-        const image = sourceModeImage(item, name);
-        if (!image || !imageUseAllowed(image)) continue;
-        let media: string | null;
+        const images = modeImages(item, name);
+        if (!images.length || !images.every((image) => imageUseAllowed(image))) continue;
+        const assets: string[] = [];
         try {
-          media = await importImage(db, image);
+          for (const image of images) {
+            const id = await importImage(db, image);
+            if (id) assets.push(id);
+          }
         } catch {
           continue;
         }
-        if (!media) continue;
+        if (assets.length < images.length) continue;
         const id = randomUUID();
         const inserted = await db
           .from('veyli_challenges')
@@ -288,7 +298,7 @@ const createRounds = async (
         if (ownsDraft && prior.data) {
           const roundId = prior.data.id;
           const clues = await db.from('veyli_clues').upsert(
-            sourceClues(name, media, item.facts, item.title, item.year).map((clue) => ({
+            sourceClues(name, assets, item.facts).map((clue) => ({
               ...clue,
               challenge_id: roundId,
             })),

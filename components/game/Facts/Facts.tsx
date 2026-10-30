@@ -7,10 +7,11 @@ import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import type { GameState } from '@/features/game/contracts';
 import { cn } from '@/lib/utils';
 
+/** Each revealed clue carries the fact that came with it, so a miss unlocks exactly one. */
 const Facts = ({ state }: { state: GameState }) => {
   const list = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
-  const facts = state.clues.slice(1).filter((clue) => clue.kind === 'text');
+  const facts = state.clues.filter((clue) => clue.text);
   useEffect(() => {
     if (state.attemptsUsed > 0) list.current?.scrollTo({ top: 0 });
   }, [state.attemptsUsed]);
@@ -32,7 +33,7 @@ const Facts = ({ state }: { state: GameState }) => {
           // biome-ignore lint/a11y/noNoninteractiveTabindex: The scrollable fact log needs keyboard access.
           tabIndex={0}
         >
-          {[...facts].reverse().map((fact) => {
+          {[...facts].reverse().map((fact, index) => {
             const separator = fact.text?.indexOf(':') ?? -1;
             return (
               <motion.div
@@ -43,7 +44,7 @@ const Facts = ({ state }: { state: GameState }) => {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <span className={styles.factLabel}>
-                  {separator > -1 ? fact.text!.slice(0, separator) : `Fact ${fact.position - 1}`}
+                  {separator > -1 ? fact.text!.slice(0, separator) : `Fact ${facts.length - index}`}
                 </span>
                 <strong>
                   {separator > -1 ? fact.text!.slice(separator + 1).trim() : fact.text}
@@ -53,7 +54,7 @@ const Facts = ({ state }: { state: GameState }) => {
           })}
         </div>
       ) : (
-        <p className={sharedStyles.muted}>A new fact after each miss.</p>
+        <p className={sharedStyles.muted}>A new scene and a new fact after each miss.</p>
       )}
     </section>
   );

@@ -61,7 +61,8 @@ test('protects administration and saves aliases, future schedules and ordered cl
   // Referenced items and images cannot be changed in ways that invalidate saved rounds.
   await gameState(admin.request, apiPath());
   const item = current.items.find((item) => item.slug === 'nosferatu-1922')!;
-  const media = current.media.find((media) => media.slug === 'nosferatu')!;
+  // Classic opens on the first scene of its run, so that is the asset the round locks.
+  const media = current.media.find((media) => media.slug === 'nosferatu-scene-1')!;
   for (const [entity, payload] of [
     ['item', { ...item, category_id: idFor(current.categories, 'games') }],
     ['media', { ...media, storage_path: 'admin/replacement.jpg' }],

@@ -12,11 +12,11 @@ const previewSchema = z.object({
   crop_percent: z.number(),
   media: z.object({ storage_path: z.string(), approved: z.literal(true) }),
 });
-const presentPreview = (value: unknown, mode: string, category: string) => {
+const presentPreview = (value: unknown, mode: string) => {
   if (!value) return null;
   const image = previewSchema.parse(value);
   const options = clueImageOptions(
-    { mode, category, attemptsUsed: 0, attemptLimit: 8 },
+    { mode, attemptsUsed: 0, attemptLimit: 8 },
     { blur: image.blur_amount, cropPercent: image.crop_percent }
   );
   return {
@@ -31,18 +31,17 @@ export const initialImage = async (key: string) => {
   if (isTestDatabaseEnabled()) {
     const { embeddedInitialImage } = await import('@/tests/support/database');
     const value = await embeddedInitialImage(key);
-    return value ? presentPreview(value, value.mode, value.category) : null;
+    return value ? presentPreview(value, value.mode) : null;
   }
   const db = getSupabase();
   if (!db) return null;
   const { data: challenge, error } = await db
     .from('veyli_challenges')
-    .select('id,release_date,mode:veyli_modes(slug),category:veyli_categories(slug)')
+    .select('id,release_date,mode:veyli_modes(slug)')
     .eq('public_key', key)
     .maybeSingle();
   if (error || !challenge) return null;
   const mode = z.object({ slug: z.string() }).parse(challenge.mode).slug;
-  const category = z.object({ slug: z.string() }).parse(challenge.category).slug;
   const available = z
     .object({ challenges: z.array(z.object({ key: z.string() })) })
     .parse(await rpc('veyli_hub', { requested_date: challenge.release_date }));
@@ -58,5 +57,5 @@ export const initialImage = async (key: string) => {
     .eq('position', 1)
     .eq('kind', 'image')
     .maybeSingle();
-  return presentPreview(data, mode, category);
+  return presentPreview(data, mode);
 };

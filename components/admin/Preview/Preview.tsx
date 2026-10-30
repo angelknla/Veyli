@@ -3,13 +3,12 @@ import styles from '@/components/admin/Preview/Preview.module.css';
 import LoadingImage from '@/components/LoadingImage/LoadingImage';
 import sharedStyles from '@/components/ui/Shared/Shared.module.css';
 import type { AdminRecord, AdminSnapshot } from '@/features/admin/contracts';
-import { frameCover, musicCrop } from '@/features/game/presentation';
+import { frameCover } from '@/features/game/presentation';
 import { cn } from '@/lib/utils';
 
 const Preview = ({ record, snapshot }: { record: AdminRecord; snapshot: AdminSnapshot }) => {
   const answer = snapshot.items.find((item) => item.id === record.answer_id);
   const mode = snapshot.modes.find((value) => value.id === record.mode_id);
-  const category = snapshot.categories.find((value) => value.id === record.category_id);
   const clues = (record.clues || []) as AdminRecord[];
   return (
     <section className={styles.adminPreview}>
@@ -29,6 +28,12 @@ const Preview = ({ record, snapshot }: { record: AdminRecord; snapshot: AdminSna
           appears with the result.
         </p>
       )}
+      {mode?.slug === 'classic' && (
+        <p className={fieldStyles.adminHelp}>
+          Every clue is a scene of the same title, in order: clue 1 opens the round and each later
+          scene replaces it after a miss, unlocking the fact written on that clue.
+        </p>
+      )}
       {clues.map((clue, index) => {
         const media = snapshot.media.find((value) => value.id === clue.media_id);
         return (
@@ -42,7 +47,7 @@ const Preview = ({ record, snapshot }: { record: AdminRecord; snapshot: AdminSna
                 height={800}
                 sizes="(max-width: 850px) 92vw, 65vw"
                 loading={index === 0 ? 'eager' : 'lazy'}
-                src={`/api/admin/media/${media.id}?blur=${Number(clue.blur_amount || 0)}&crop=${mode?.slug === 'classic' && category?.slug === 'music' ? musicCrop(0, Number(record.attempt_limit)) : Number(clue.crop_percent || 100)}&cover=${mode?.slug === 'one-frame' ? frameCover(0, Number(record.attempt_limit)) : 0}`}
+                src={`/api/admin/media/${media.id}?blur=${Number(clue.blur_amount || 0)}&crop=${Number(clue.crop_percent || 100)}&cover=${mode?.slug === 'one-frame' ? frameCover(0, Number(record.attempt_limit)) : 0}`}
                 alt={`Internal preview clue ${index + 1}`}
               />
             ) : (

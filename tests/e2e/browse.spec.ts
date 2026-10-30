@@ -6,7 +6,7 @@ test('browses daily puzzles and whole category cards without a player login', as
   await expect(page).toHaveURL('/');
   await expect(page.getByRole('heading', { name: /PRESS PLAY/ })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Today', exact: true })).toHaveAttribute('href', '/');
-  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(12);
+  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(10);
   await expect(page.getByRole('link', { name: /Sign in|Log in|Register|Profile/ })).toHaveCount(0);
   await page
     .getByRole('navigation', { name: 'Main navigation' })
@@ -16,17 +16,19 @@ test('browses daily puzzles and whole category cards without a player login', as
   await expect(page.locator('[data-testid~="category-card"]')).toHaveCount(5);
   await expect(page.locator('[data-testid~="category-art"] svg')).toHaveCount(5);
   await expect(page.locator('[data-testid~="category-card"] img')).toHaveCount(0);
-  for (const [name, slug] of [
-    ['Music', 'music'],
-    ['Pop culture', 'pop-culture'],
-  ]) {
+  // Classic needs a run of scenes, so Music and Pop culture carry One Frame alone.
+  for (const [name, slug, tiles] of [
+    ['Music', 'music', 1],
+    ['Pop culture', 'pop-culture', 1],
+    ['Television', 'television', 2],
+  ] as const) {
     await page.goto('/categories');
     await page
       .locator('[data-testid~="category-card"]')
       .filter({ has: page.getByRole('heading', { name, exact: true }) })
       .click({ position: { x: 15, y: 15 } });
     await expect(page).toHaveURL(new RegExp(`/categories/${slug}$`));
-    await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(2);
+    await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(tiles);
   }
   await page.goto('/archive');
   await expect(page.getByRole('heading', { name: 'Missed a day?' })).toBeVisible();
@@ -35,10 +37,10 @@ test('browses daily puzzles and whole category cards without a player login', as
 
 test('plays Music and Pop Culture through the common game interface', async ({ page }) => {
   for (const [category, mode, title, year] of [
-    ['music', 'classic', 'Taylor Swift', 2006],
     ['music', 'one-frame', 'Lady Gaga', 2008],
-    ['pop-culture', 'classic', 'Sherlock Holmes', 1887],
     ['pop-culture', 'one-frame', 'Alice', 1865],
+    ['television', 'classic', 'Bonanza', 1959],
+    ['games', 'classic', 'SuperTuxKart', 2006],
   ] as const) {
     await page.goto(`/play/${roundKey(mode, category)}`);
     await expect(page.getByText('8 guesses left')).toBeVisible();
@@ -50,9 +52,12 @@ test('plays Music and Pop Culture through the common game interface', async ({ p
 });
 
 test('shows navigation feedback and opens loaded challenges at the top', async ({ page }) => {
-  for (const category of ['music', 'movies']) {
-    const path = playPath('classic', category);
-    const api = `/api/challenges/${roundKey('classic', category)}`;
+  for (const [category, mode] of [
+    ['music', 'one-frame'],
+    ['movies', 'classic'],
+  ] as const) {
+    const path = playPath(mode, category);
+    const api = `/api/challenges/${roundKey(mode, category)}`;
     let releaseNavigation = () => {};
     let releaseRound = () => {};
     const navigation = new Promise<void>((resolve) => {
@@ -84,9 +89,9 @@ test('shows navigation feedback and opens loaded challenges at the top', async (
       await expect(page.getByRole('status').filter({ hasText: 'Setting the scene' })).toBeVisible();
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       releaseRound();
-      await expect(page.locator('[data-testid~="classic-frame"] img')).toBeVisible();
+      await expect(page.locator('[data-testid~="clue-stage"] img')).toBeVisible();
       await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-      await expect(page.locator('[data-testid~="classic-frame"]')).toBeInViewport();
+      await expect(page.locator('[data-testid~="clue-stage"]')).toBeInViewport();
     } finally {
       releaseNavigation();
       releaseRound();
@@ -99,18 +104,18 @@ test('persists the release-year filter without leaking hidden answer years', asy
   await page.getByRole('spinbutton', { name: 'From year' }).fill('2000');
   await page.getByRole('spinbutton', { name: 'To year' }).fill('2026');
   await page.getByRole('button', { name: 'Apply', exact: true }).click();
-  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(4);
+  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(3);
   for (const href of await page
     .locator('[data-testid~="challenge-tile"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href'))))
     expect(href).toMatch(/-(games|music)-/);
   const filtered = await (await page.request.get('/api/hub?from=2000&to=2026')).json();
-  expect(filtered.challenges).toHaveLength(4);
+  expect(filtered.challenges).toHaveLength(3);
   expect(JSON.stringify(filtered)).not.toMatch(/answer_id|release_year|accepted_answer/);
   await page.reload();
-  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(4);
+  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(3);
   await page.getByRole('button', { name: 'All years', exact: true }).click();
-  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(12);
+  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(10);
   expect((await page.request.get('/api/hub?from=2026&to=2000')).status()).toBe(400);
 });
 

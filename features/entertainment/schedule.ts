@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { posterBlur } from '../game/presentation';
-import { sourceModeImage } from './scene-images';
+import { classicSceneClues, posterBlur } from '../game/presentation';
+import { classicScenes, sourceModeImage } from './scene-images';
 import type { SourceTitle } from './source-client';
 
 type ClueShape = {
@@ -9,6 +9,16 @@ type ClueShape = {
   media_id?: string | null;
   text_content?: string | null;
   presentation: string;
+  blur_amount: number;
+  crop_percent: number;
+};
+/** One authored clue row: Classic fills both the media and the text column. */
+type SourceClue = {
+  position: number;
+  kind: 'image' | 'text' | 'quote';
+  media_id: string | null;
+  text_content: string | null;
+  presentation: 'full' | 'crop' | 'blur';
   blur_amount: number;
   crop_percent: number;
 };
@@ -54,76 +64,65 @@ export const dailyPicks = (items: SourceTitle[], day: string, count: number) => 
   }
   return result.length === count ? result : [];
 };
+const identity = (item: SourceTitle) => `${item.title.toLowerCase()}:${item.year}`;
+/** Each mode draws from the pool it can actually present, on a separate answer. */
 export const dailyModes = (
   items: SourceTitle[],
   day: string,
   category: SourceTitle['category']
 ) => {
-  const frames = items.filter((item) => sourceModeImage(item, 'classic'));
-  const core = dailyPicks(frames, day, category === 'movies' && frames.length >= 3 ? 3 : 2);
-  if (!core.length) return [];
-  const picks = [
-    { mode: 'classic', item: core[0] },
-    { mode: 'one-frame', item: core[1] },
-  ];
-  if (category === 'pop-culture') return picks;
-  const blocked = new Set(
-    core.slice(0, 2).map((item) => `${item.title.toLowerCase()}:${item.year}`)
+  const picks: { mode: string; item: SourceTitle }[] = [];
+  const taken = new Set<string>();
+  const unused = (item: SourceTitle) => !taken.has(identity(item));
+  const claim = (mode: string, item?: SourceTitle) => {
+    if (!item) return;
+    picks.push({ mode, item });
+    taken.add(identity(item));
+  };
+  claim(
+    'classic',
+    dailyPicks(
+      items.filter((item) => classicScenes(item).length),
+      day,
+      1
+    )[0]
   );
+  const frames = items.filter((item) => sourceModeImage(item, 'one-frame') && unused(item));
+  claim('one-frame', dailyPicks(frames, day, 1)[0]);
+  if (!picks.some((pick) => pick.mode === 'one-frame') || category === 'pop-culture') return picks;
   const covers = items.filter(
-    (item) =>
-      item.images.some((image) => image.role === 'poster') &&
-      !blocked.has(`${item.title.toLowerCase()}:${item.year}`)
+    (item) => item.images.some((image) => image.role === 'poster') && unused(item)
   );
-  const poster =
-    category === 'movies' && core[2]?.images.some((image) => image.role === 'poster')
-      ? core[2]
-      : dailyPicks(covers, day, 1)[0];
-  if (poster?.images.some((image) => image.role === 'poster'))
-    picks.push({ mode: 'poster', item: poster });
+  claim('poster', dailyPicks(covers, day, 1)[0]);
   return picks;
 };
+/** Classic spends one clue per attempt; the other modes reuse a single asset. */
 export const sourceClues = (
   mode: string,
-  mediaId: string,
-  facts: SourceTitle['facts'],
-  title = '',
-  year?: number
-) => {
-  const frame = {
+  mediaIds: string[],
+  facts: SourceTitle['facts'] = []
+): SourceClue[] => {
+  const frame: SourceClue = {
     position: 1,
-    kind: 'image' as const,
-    media_id: mediaId,
-    presentation: 'full' as const,
+    kind: 'image',
+    media_id: mediaIds[0] ?? null,
+    text_content: null,
+    presentation: 'full',
     blur_amount: 0,
     crop_percent: 100,
   };
-  if (mode === 'classic') {
-    const expanded = [...facts];
-    if (title) {
-      const letters = [...title.replace(/\s/g, '')];
-      const fallback = [
-        { label: 'Decade', value: year ? `${Math.floor(year / 10) * 10}s` : '' },
-        { label: 'Words in the name', value: String(title.trim().split(/\s+/).length) },
-        { label: 'Starts with', value: letters[0] || '' },
-        { label: 'Name length', value: `${letters.length} characters, excluding spaces` },
-        { label: 'Ends with', value: letters.at(-1) || '' },
-      ];
-      expanded.push(...fallback.filter((fact) => fact.value));
-    }
-    return [
-      frame,
-      ...expanded.slice(0, 7).map((fact, index) => ({
-        position: index + 2,
-        kind: 'text' as const,
-        text_content: `${fact.label}: ${fact.value}`,
-        media_id: null,
-        presentation: 'full' as const,
-        blur_amount: 0,
-        crop_percent: 100,
-      })),
-    ];
-  }
+  if (mode === 'classic')
+    // A clue row carries both columns, so one miss opens a new scene and the fact beside it.
+    return mediaIds.slice(0, classicSceneClues).map((media, index) => {
+      // The opening scene arrives on its own; every fact after it is earned by a miss.
+      const fact = index > 0 ? facts[index - 1] : undefined;
+      return {
+        ...frame,
+        position: index + 1,
+        media_id: media,
+        text_content: fact ? `${fact.label}: ${fact.value}` : null,
+      };
+    });
   if (mode === 'poster')
     return Array.from({ length: 8 }, (_, index) => ({
       ...frame,

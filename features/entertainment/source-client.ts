@@ -1,11 +1,12 @@
 import { z } from 'zod';
-import { withReviewedMovieScene } from './scene-images';
+import { sceneLimit, withReviewedMovieScene } from './scene-images';
 
 export type SourceCategory = 'movies' | 'television' | 'games' | 'music' | 'pop-culture';
 export type SourceImage = {
   url: string;
   role: 'frame' | 'poster' | 'photo';
   sceneVerified?: boolean;
+  textless?: boolean;
   episode?: { season: number; number: number };
   sourceUrl: string;
   author: string;
@@ -242,19 +243,27 @@ const detail = z.object({
     .optional(),
   images: z
     .object({
-      backdrops: z.array(z.object({ file_path: z.string() })).default([]),
+      backdrops: z
+        .array(z.object({ file_path: z.string(), iso_639_1: z.string().nullable().optional() }))
+        .default([]),
       posters: z.array(z.object({ file_path: z.string() })).default([]),
     })
     .optional(),
 });
 /** Episode stills depict an aired scene; series backdrops may be promotional composites. */
-export const televisionScene = async (
+export const televisionScenes = async (
   item: SourceTitle,
-  seasonCount = 3
-): Promise<SourceImage | null> => {
-  if (item.provider !== 'tmdb' || item.category !== 'television') return null;
+  seasonCount = 3,
+  limit = sceneLimit
+): Promise<SourceImage[]> => {
+  if (item.provider !== 'tmdb' || item.category !== 'television') return [];
   const today = new Date().toISOString().slice(0, 10);
-  for (let season = 1; season <= Math.min(3, Math.max(1, seasonCount)); season++) {
+  const scenes: SourceImage[] = [];
+  for (
+    let season = 1;
+    season <= Math.min(3, Math.max(1, seasonCount)) && scenes.length < limit;
+    season++
+  ) {
     try {
       const data = z
         .object({
@@ -267,29 +276,35 @@ export const televisionScene = async (
           ),
         })
         .parse(await sourceJson(tmdbUrl(`tv/${item.providerId}/season/${season}`)));
-      const episode = data.episodes.find(
-        (episode) => episode.still_path && episode.air_date && episode.air_date <= today
-      );
-      if (!episode?.still_path) continue;
-      return {
-        url: `https://image.tmdb.org/t/p/w1280${episode.still_path}`,
-        role: 'frame',
-        sceneVerified: true,
-        episode: { season, number: episode.episode_number },
-        sourceUrl: `${item.sourceUrl}/season/${season}/episode/${episode.episode_number}`,
-        author: 'Episode still supplied by TMDB; rights remain with the respective owner',
-        license: 'TMDB API: attributed non-commercial use',
-        licenseUrl: 'https://developer.themoviedb.org/docs/faq',
-        policy: 'tmdb',
-      };
+      for (const episode of data.episodes) {
+        if (scenes.length >= limit) break;
+        if (!episode.still_path || !episode.air_date || episode.air_date > today) continue;
+        scenes.push({
+          url: `https://image.tmdb.org/t/p/w1280${episode.still_path}`,
+          role: 'frame',
+          sceneVerified: true,
+          episode: { season, number: episode.episode_number },
+          sourceUrl: `${item.sourceUrl}/season/${season}/episode/${episode.episode_number}`,
+          author: 'Episode still supplied by TMDB; rights remain with the respective owner',
+          license: 'TMDB API: attributed non-commercial use',
+          licenseUrl: 'https://developer.themoviedb.org/docs/faq',
+          policy: 'tmdb',
+        });
+      }
     } catch {
       // Try another season when its episode images are unavailable.
     }
   }
-  return (
-    item.images.find((image) => image.role === 'frame' && image.sceneVerified && image.episode) ||
-    null
+  if (scenes.length) return scenes;
+  return item.images.filter(
+    (image) => image.role === 'frame' && image.sceneVerified && image.episode
   );
+};
+export const televisionScene = async (
+  item: SourceTitle,
+  seasonCount = 3
+): Promise<SourceImage | null> => {
+  return (await televisionScenes(item, seasonCount, 1))[0] || null;
 };
 export const hydrateScreenTitle = async (item: SourceTitle): Promise<SourceTitle> => {
   if (item.provider === 'tmdb') {
@@ -343,16 +358,20 @@ export const hydrateScreenTitle = async (item: SourceTitle): Promise<SourceTitle
           .join(', '),
       },
     ].filter((x) => x.value);
+    // A backdrop carrying a language has a title treatment burnt in; only textless ones are scenes.
     item.images = [
       ...(data.images?.backdrops
-        .slice(0, 2)
-        .map((image) => ({ path: image.file_path, role: 'frame' as const })) || []),
+        .filter((image) => !image.iso_639_1)
+        .slice(0, sceneLimit)
+        .map((image) => ({ path: image.file_path, role: 'frame' as const, textless: true })) || []),
       ...(data.images?.posters
         .slice(0, 1)
-        .map((image) => ({ path: image.file_path, role: 'poster' as const })) || []),
+        .map((image) => ({ path: image.file_path, role: 'poster' as const, textless: false })) ||
+        []),
     ].map((image) => ({
       url: `https://image.tmdb.org/t/p/w1280${image.path}`,
       role: image.role,
+      ...(image.textless ? { textless: true } : {}),
       sourceUrl: item.sourceUrl,
       author: 'Image supplied by TMDB; rights remain with the respective owner',
       license: 'TMDB API: attributed non-commercial use',
@@ -360,9 +379,8 @@ export const hydrateScreenTitle = async (item: SourceTitle): Promise<SourceTitle
       policy: 'tmdb',
     }));
     if (type === 'tv') {
-      const scene = await televisionScene(item, data.number_of_seasons);
       item.images = [
-        ...(scene ? [scene] : []),
+        ...(await televisionScenes(item, data.number_of_seasons)),
         ...item.images.filter((image) => image.role === 'poster'),
       ];
       return item;
@@ -399,7 +417,7 @@ export const hydrateScreenTitle = async (item: SourceTitle): Promise<SourceTitle
       { label: 'Age rating', value: data.esrb_rating?.name || '' },
       { label: 'Metacritic', value: data.metacritic ? String(data.metacritic) : '' },
     ].filter((x) => x.value);
-    item.images = screenshots.results.slice(0, 2).map((image) => ({
+    item.images = screenshots.results.slice(0, sceneLimit).map((image) => ({
       url: image.image,
       role: 'frame',
       sourceUrl: item.sourceUrl,

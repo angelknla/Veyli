@@ -1,3 +1,5 @@
+import { sceneCategories } from '@/features/entertainment/scene-images';
+
 type Title = readonly [slug: string, title: string, year: number];
 
 export const catalogue: Record<string, Title[]> = {
@@ -47,18 +49,50 @@ export const frameMedia: Record<string, string> = {
   'alice-1865': 'alice',
 };
 
+/** Classic spends one scene per attempt, so its answer carries a whole run of frames. */
+export const sceneMedia: Record<string, string[]> = Object.fromEntries(
+  sceneCategories.map((category) => {
+    const answer = catalogue[category][0][0];
+    return [
+      answer,
+      Array.from({ length: 8 }, (_, index) => `${frameMedia[answer]}-scene-${index + 1}`),
+    ];
+  })
+);
+
+/** Classic carries one of these on each scene after the first, so a miss unlocks one fact. */
+export const answerFacts: Record<string, string[]> = {
+  'nosferatu-1922': [
+    'Year: 1922',
+    'Genre: Gothic horror',
+    'Director: F. W. Murnau',
+    'Country: Germany',
+    'Lead actor: Max Schreck',
+    'Format: Silent film',
+    'Based on: Bram Stoker’s Dracula',
+  ],
+  'bonanza-1959': [
+    'Year: 1959',
+    'Genre: Western',
+    'Creator: David Dortort',
+    'Seasons: 14',
+    'Network: NBC',
+    'Setting: Nevada',
+    'Lead actor: Lorne Greene',
+  ],
+  'supertuxkart-2006': [
+    'Year: 2006',
+    'Genre: Kart racing',
+    'Developer: SuperTuxKart team',
+    'Platforms: Linux, Windows, macOS',
+    'Licence: GPL',
+    'Engine: Irrlicht',
+    'Mascot: Tux',
+  ],
+};
+
 export const aliases: Record<string, string[]> = {
   'nosferatu-1922': ['Nosferatu: A Symphony of Horror'],
   'trip-to-the-moon-1902': ['Le Voyage dans la Lune', 'Trip to the Moon'],
   'matrix-1999': ['Matrix'],
 };
-
-export const movieFacts = [
-  'Year: 1922',
-  'Genre: Gothic horror',
-  'Director: F. W. Murnau',
-  'Country: Germany',
-  'Lead actor: Max Schreck',
-  'Format: Silent film',
-  'Based on: Bram Stoker’s Dracula',
-];
