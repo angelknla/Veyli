@@ -84,6 +84,35 @@ Set private variables from `.env.example`, including `SUPABASE_URL`/`SUPABASE_SE
 
 The app includes a manifest, service worker, favicon, Apple touch icon and installation icons. Real-device installation and native sharing need HTTPS verification. Logs redact credentials; `MONITORING_ENDPOINT` optionally receives structured errors.
 
+### Netlify
+
+Import `angelknla/Veyli` from GitHub, select `main`, and leave the base directory empty. The committed `netlify.toml` sets `yarn build`, publishes `.next`, and selects Node 26.4.0 for the build. Netlify automatically installs its current Next.js adapter; this app requires server rendering rather than static export.
+
+Add the following through Netlify’s **Project configuration → Environment variables**. Application variables must be available to Functions; use Builds and Functions scopes, or the default All scopes. Variables in `netlify.toml` are build-only, so keep credentials in the Netlify UI.
+
+| Variable | Value |
+| --- | --- |
+| `SUPABASE_URL` | Existing value from Veyli’s private `.env.local`; the shared FitnessJourni project. |
+| `SUPABASE_SECRET_KEY` | Existing server-side key from Veyli’s private `.env.local`. |
+| `ANONYMOUS_COOKIE_SECRET` | Existing Veyli value; retain it across deployments. |
+| `ADMIN_ACCESS_KEY` | Existing Veyli admin password. |
+| `TMDB_API_KEY` | Existing value for movie and TV imports. |
+| `RAWG_API_KEY` | Existing value for game imports. |
+| `TMDB_IMAGE_USAGE` | `noncommercial` for the current launch. |
+| `SOURCE_USER_AGENT` | `Veyli/0.1 (https://github.com/angelknla/Veyli)` |
+| `SOURCE_SYNC_ENABLED` | `false` initially; run full content refreshes locally. |
+| `AWS_LAMBDA_JS_RUNTIME` | `nodejs24.x`, a currently supported Netlify function runtime. |
+
+The Node 26 build and Node 24 function runtime are separate settings. Netlify falls back to a supported runtime when the build’s Node version is unavailable on AWS Lambda. `AWS_LAMBDA_JS_RUNTIME` must be set through the UI, CLI or API, not `netlify.toml`. Keep Yarn Classic as declared in `package.json`.
+
+Optional variables are `IGDB_CLIENT_ID` and `IGDB_CLIENT_SECRET` for IGDB metadata, and `MONITORING_ENDPOINT` for error reporting. `DATABASE_URL` is only needed by the local migration script. Leave `VEYLI_INTEGRATION_DATABASE` and `VEYLI_BUILD_DIRECTORY` unset on Netlify.
+
+The shared Supabase installation and imported media remain available to the hosted app. No Supabase Auth redirect configuration is needed because players have no login. Open `/admin` with username `admin` and the configured `ADMIN_ACCESS_KEY` as its password.
+
+Netlify synchronous functions have a 60-second execution limit; Next’s `maxDuration = 300` does not extend it. Keep automatic full-source maintenance disabled initially and run `yarn db:sync` locally to replenish the rolling lineup. For unattended refreshes, use a separate scheduled job with enough execution time. Each new GitHub push triggers a deploy; environment changes require a new deploy.
+
+References: [Netlify Next.js support](https://docs.netlify.com/build/frameworks/framework-setup-guides/nextjs/overview/), [function runtime and limits](https://docs.netlify.com/build/functions/optional-configuration/), and [function environment variables](https://docs.netlify.com/build/functions/environment-variables/).
+
 ## Third-party licenses
 
 Application code is licensed under [AGPL-3.0-only](../LICENSE). Provider images and imported media retain their own terms; source links, authors and licences are recorded with each asset. [Content credits](../app/credits/page.tsx) lists the homepage photograph and provider notices. Manrope retains its [SIL Open Font License](../public/fonts/Manrope-OFL.txt).

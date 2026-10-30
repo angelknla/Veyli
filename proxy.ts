@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { requestProtocol } from '@/lib/request';
 import { verifyAdminHeader } from '@/lib/security/token';
 export function proxy(request: NextRequest) {
   if (!process.env.ADMIN_ACCESS_KEY || process.env.ADMIN_ACCESS_KEY.length < 24)
@@ -6,11 +7,7 @@ export function proxy(request: NextRequest) {
       status: 503,
       headers: { 'Cache-Control': 'no-store' },
     });
-  if (
-    process.env.NODE_ENV === 'production' &&
-    request.nextUrl.protocol !== 'https:' &&
-    !(process.env.VERCEL && request.headers.get('x-forwarded-proto') === 'https')
-  )
+  if (process.env.NODE_ENV === 'production' && requestProtocol(request) !== 'https:')
     return new NextResponse('Administrative access requires HTTPS.', { status: 403 });
   if (!verifyAdminHeader(request.headers.get('authorization'), process.env.ADMIN_ACCESS_KEY))
     return new NextResponse('Protected Veyli administration.', {
