@@ -1,8 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import type { ReactNode } from 'react';
-import Footer from '@/components/layout/Footer';
-import Header from '@/components/layout/Header';
-import { YearRangeProvider } from '@/features/challenges/components/YearRange';
 import '@/styles/globals.css';
 export const metadata: Metadata = {
   title: { default: 'Veyli — Press play. Prove it.', template: '%s · Veyli' },
@@ -13,19 +9,6 @@ export const metadata: Metadata = {
 };
 export const viewport: Viewport = { themeColor: '#090909' };
 export const maxDuration = 300;
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return (
-    <html lang="en">
-      <body>
-        <a className="skipLink" href="#main">
-          Skip to content
-        </a>
-        <YearRangeProvider>
-          <Header />
-          <main id="main">{children}</main>
-          <Footer />
-        </YearRangeProvider>
-      </body>
-    </html>
-  );
-}
+
+import RootLayout from '@/components/layout/RootLayout/RootLayout';
+export default RootLayout;

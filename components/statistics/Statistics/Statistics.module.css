@@ -1,0 +1,120 @@
+.statsSecondary {
+  display: flex;
+  gap: 35px;
+  flex-wrap: wrap;
+  padding-bottom: 35px;
+}
+.statsSecondary > div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+}
+.statsSecondary strong {
+  color: var(--text);
+}
+.performanceGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 55px;
+  padding: 20px 0 50px;
+}
+.performanceGrid h2 {
+  margin-bottom: 25px;
+}
+.performanceRow {
+  margin-bottom: 20px;
+}
+.performanceRow > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+.performanceRow span:last-child {
+  color: var(--muted);
+}
+.achievementGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  padding: 0 0 45px;
+}
+.achievement {
+  padding: 23px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.achievement svg {
+  color: var(--accent);
+}
+.achievement p {
+  color: var(--muted);
+}
+.localNote {
+  font-size: 15px;
+  color: var(--muted);
+  padding-bottom: 40px;
+}
+.localNote a {
+  text-decoration: underline;
+}
+@media (max-width: 850px) {
+  .achievementGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .performanceGrid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .achievementGrid {
+    grid-template-columns: 1fr;
+  }
+}
+.performanceMeter {
+  display: block;
+  width: 100%;
+  height: 8px;
+  border: 0;
+  background: #282828;
+  border-radius: 4px;
+}
+.performanceMeter::-webkit-meter-bar {
+  background: #282828;
+  border: 0;
+  border-radius: 4px;
+}
+.performanceMeter::-webkit-meter-optimum-value {
+  background: var(--accent);
+  border-radius: 4px;
+}
+.performanceMeter::-moz-meter-bar {
+  background: var(--accent);
+  border-radius: 4px;
+}
+.statsSecondary > div {
+  font-size: 16px;
+}
+.performanceGrid h2 {
+  font-size: 30px;
+}
+.performanceRow > div:first-child {
+  font-size: 16px;
+}
+.achievement h3 {
+  font-size: 19px;
+}
+.achievement p {
+  font-size: 15px;
+}
+@media (max-width: 600px) {
+  .statsSecondary {
+    gap: 15px;
+  }
+  .statsSecondary > div {
+    font-size: 15px;
+  }
+}

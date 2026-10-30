@@ -1,0 +1,431 @@
+.gameShell {
+  padding-bottom: 80px;
+}
+.gameTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: var(--muted);
+}
+.gameHeading {
+  padding: 30px 0;
+}
+.gameHeading h1 {
+  margin: 12px 0;
+}
+.gameHeading p:last-child {
+  color: var(--muted);
+}
+.gameLayout {
+  display: grid;
+  align-items: start;
+}
+.clueStage {
+  object-fit: contain;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.clueStage img {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.clueStage::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 85px;
+  background: linear-gradient(transparent, #070707ad);
+  pointer-events: none;
+}
+.clueCaption {
+  position: absolute;
+  z-index: 1;
+  letter-spacing: 0.12em;
+}
+.clueWords > div {
+  padding: 40px 45px;
+  text-align: center;
+}
+.clueWords svg {
+  margin: auto auto 20px;
+  color: var(--accent);
+  opacity: 0.8;
+}
+.clueWords blockquote {
+  font-family: Manrope, system-ui, sans-serif;
+  margin: 0 0 24px;
+}
+.clueWords > div > span {
+  font-size: 14px;
+  color: var(--muted);
+}
+.clueNavigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.clueNavigation button {
+  width: 39px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.clueNavigation button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--background);
+  border-color: var(--accent);
+}
+.clueNavigation > span {
+  margin-left: auto;
+  color: var(--muted);
+}
+.attemptSummary {
+  display: flex;
+  justify-content: space-between;
+}
+.attemptSummary > span {
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+.attemptDots {
+  display: flex;
+  gap: 9px;
+  margin: 23px 0 33px;
+}
+.attemptDots span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.guessHistory {
+  padding-top: 30px;
+}
+.guessHistory > .eyebrow {
+  display: block;
+  padding-bottom: 13px;
+}
+.guessHistory > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+}
+.guessHistory small {
+  color: var(--muted);
+  margin-left: 10px;
+}
+.guessHistory svg {
+  color: #e5a297;
+}
+.guessHistory > p {
+  margin-top: 4px;
+}
+.dialogBody {
+  padding-top: 21px;
+}
+.dialogBody p {
+  margin-bottom: 15px;
+}
+@media (max-width: 1100px) {
+  .clueStage {
+    min-height: 320px;
+  }
+}
+@media (max-width: 850px) {
+  .gameLayout {
+    gap: 30px;
+  }
+  .gameShell {
+    max-width: 800px;
+  }
+  .gameControls {
+    max-width: 640px;
+    width: 100%;
+  }
+  .attemptDots {
+    margin-bottom: 23px;
+  }
+}
+@media (max-width: 600px) {
+  .gameShell {
+    padding-bottom: 50px;
+  }
+  .gameTopline {
+    font-size: 14px;
+    gap: 10px;
+  }
+  .gameTopline .textLink {
+    font-size: 14px;
+  }
+  .gameTopline > span {
+    max-width: 145px;
+    white-space: nowrap;
+  }
+  .gameHeading {
+    padding: 24px 0;
+  }
+}
+fieldset.clueNavigation {
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.gameShell {
+  padding-top: 32px;
+}
+.gameTopline {
+  font-size: 15px;
+}
+.gameHeading {
+  margin-top: 24px;
+  margin-bottom: 30px;
+}
+.gameHeading h1 {
+  font-size: clamp(44px, 5vw, 72px);
+}
+.gameHeading p:last-child {
+  font-size: 17px;
+  max-width: none;
+}
+.gameLayout {
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr);
+  gap: 38px;
+}
+.clueStage {
+  min-height: 0;
+  aspect-ratio: 1.5;
+  background: #161619;
+  border-radius: 8px;
+}
+.clueWords {
+  background: radial-gradient(ellipse at top, #521425, #161619);
+}
+.clueWords blockquote {
+  font-size: clamp(25px, 3vw, 39px);
+  line-height: 1.3;
+  font-weight: 700;
+}
+.clueCaption {
+  color: white;
+  font-size: 14px;
+  left: 20px;
+  bottom: 18px;
+}
+.clueNavigation button {
+  font-size: 16px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.clueNavigation > span {
+  font-size: 14px;
+}
+.gameControls {
+  padding-top: 4px;
+}
+.attemptSummary {
+  align-items: center;
+  font-size: 14px;
+}
+.attemptSummary strong {
+  font-size: 19px;
+}
+.attemptDots span {
+  height: 38px;
+  width: 38px;
+  font-size: 15px;
+  background: #38141e;
+  color: #fff;
+  border: 1px solid #a3273d;
+  border-radius: 4px;
+}
+.attemptDots .used {
+  background: #26262c;
+  color: #b6b6bf;
+  border-color: #444;
+}
+.guessHistory > div {
+  font-size: 17px;
+}
+.guessHistory small {
+  font-size: 14px;
+}
+.guessHistory > p {
+  font-size: 16px;
+}
+.dialogBody p {
+  font-size: 17px;
+  color: #d0d0d8;
+}
+.gameControls {
+  min-width: 0;
+}
+.clueSection {
+  min-width: 0;
+}
+@media (max-width: 1100px) {
+  .gameLayout {
+    gap: 24px;
+    grid-template-columns: minmax(0, 1.3fr) minmax(300px, 1fr);
+  }
+}
+@media (max-width: 850px) {
+  .gameLayout {
+    grid-template-columns: 1fr;
+  }
+  .gameControls {
+    padding-top: 10px;
+  }
+  .gameHeading h1 {
+    font-size: 58px;
+  }
+  .clueStage {
+    min-height: 0;
+  }
+}
+@media (max-width: 600px) {
+  .gameShell {
+    padding-top: 22px;
+  }
+  .gameHeading {
+    margin-top: 20px;
+    margin-bottom: 25px;
+  }
+  .gameHeading h1 {
+    font-size: 48px;
+  }
+  .gameHeading p:last-child {
+    font-size: 16px;
+  }
+  .clueStage {
+    aspect-ratio: 1.25;
+    min-height: 0;
+  }
+  .clueWords > div {
+    padding: 24px;
+  }
+  .clueWords blockquote {
+    font-size: 27px;
+  }
+  .clueCaption {
+    font-size: 13px;
+    bottom: 14px;
+    left: 15px;
+  }
+  .clueNavigation {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .clueNavigation > span {
+    font-size: 14px;
+    width: 100%;
+    margin: 5px 0 0;
+  }
+  .gameLayout {
+    gap: 22px;
+  }
+  .attemptSummary strong {
+    font-size: 18px;
+  }
+}
+.guessHistory > .guessHistoryList {
+  display: block;
+  padding: 0;
+  border: 0;
+  max-height: 128px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  list-style: none;
+  margin: 0;
+}
+.guessHistoryList > li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 16px;
+}
+.guessHistoryList > li > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.guessHistoryList svg {
+  flex-shrink: 0;
+}
+@media (min-width: 1000px) {
+  .gameLayoutClassic .gameControls {
+    contain: size;
+    align-self: stretch;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+  }
+  .gameLayoutClassic .classicFrame {
+    width: 100%;
+    min-width: 0;
+    min-height: 460px;
+  }
+  .gameLayoutClassic .attemptSummary {
+    flex-shrink: 0;
+  }
+  .gameLayoutClassic .attemptDots {
+    flex-shrink: 0;
+  }
+  .gameLayoutClassic .inlineError {
+    flex-shrink: 0;
+  }
+  .gameLayoutClassic .attemptDots {
+    margin: 12px 0 16px;
+  }
+  .gameLayoutClassic .guessHistory {
+    min-height: 84px;
+    padding-top: 14px;
+    flex: 0 1 auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .gameLayoutClassic .guessHistory > .eyebrow {
+    padding-bottom: 6px;
+  }
+  .gameLayoutClassic .guessHistoryList {
+    max-height: 78px;
+    min-height: 0;
+    flex: 1;
+  }
+  .gameLayoutFinished.gameLayoutClassic .gameControls {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+@media (max-width: 999px) {
+  .gameLayoutClassic {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.classicFrame {
+  margin-bottom: 0;
+}
+.clueStage img {
+  object-fit: contain;
+}

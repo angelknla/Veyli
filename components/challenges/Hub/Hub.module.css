@@ -1,0 +1,831 @@
+.hero {
+  grid-template-columns: 1.1fr 1fr;
+  gap: 50px;
+  align-items: center;
+}
+.hero .eyebrow {
+  display: flex;
+  align-items: center;
+}
+.hero h1 em {
+  color: var(--accent);
+}
+.heroDescription {
+  line-height: 1.9;
+}
+.heroActions {
+  align-items: center;
+}
+.dailyStrip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted);
+}
+.dailyStrip span:first-child {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+.dailyStrip strong {
+  color: var(--text);
+}
+.dailyStrip a {
+  display: flex;
+  gap: 10px;
+}
+.resetClock {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.resetClock strong {
+  font-variant-numeric: tabular-nums;
+}
+.filterRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+.categoryFilters button {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+}
+.modeSelect select {
+  color: var(--muted);
+  max-width: 160px;
+}
+.modeSelect option {
+  background: var(--background);
+}
+.tileVisual {
+  object-fit: cover;
+  isolation: isolate;
+}
+.tileVisual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 60% 60%,
+    color-mix(in srgb, var(--tile-accent) 14%, transparent),
+    transparent 65%
+  );
+  z-index: -1;
+}
+.tileNumber {
+  font-variant-numeric: tabular-nums;
+}
+.achievementStrip {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding: 20px 0 35px;
+}
+.achievementStrip > span:not(.eyebrow) {
+  display: flex;
+  gap: 8px;
+}
+.achievementStrip svg {
+  color: var(--accent);
+}
+@media (min-width: 1440px) {
+  .hero {
+    padding-top: 70px;
+    padding-bottom: 58px;
+    min-height: 580px;
+  }
+  .tileVisual {
+    height: 245px;
+  }
+}
+@media (max-width: 1100px) {
+  .hero {
+    gap: 30px;
+  }
+  .hero h1 {
+    font-size: 75px;
+  }
+  .heroActions {
+    gap: 17px;
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 850px) {
+  .hero {
+    padding: 35px 0;
+    gap: 25px;
+    grid-template-columns: 1.05fr 1fr;
+  }
+  .hero .eyebrow {
+    font-size: 14px;
+  }
+  .challengeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 27px 18px;
+  }
+}
+@media (max-width: 600px) {
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 32px 0 27px;
+    gap: 25px;
+  }
+  .heroCopy {
+    padding: 0;
+  }
+  .hero h1 {
+    margin: 20px 0 19px;
+  }
+  .heroDescription {
+    max-width: 330px;
+  }
+  .dailyStrip span:nth-child(2) {
+    display: none;
+  }
+  .resetClock {
+    margin-top: 17px;
+  }
+  .modeSelect {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .modeSelect select {
+    padding: 7px 10px;
+    max-width: 140px;
+  }
+  .tileVisual {
+    height: 158px;
+  }
+  .tileCategory {
+    gap: 5px;
+  }
+  .tileCategory svg {
+    width: 11px;
+  }
+  .tileVisual::after {
+    width: 155px;
+    height: 155px;
+  }
+  .achievementStrip {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .achievementStrip > .eyebrow {
+    width: 100%;
+  }
+}
+fieldset.categoryFilters {
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.homeShell {
+  padding-top: 0;
+}
+.hero {
+  display: block;
+  position: relative;
+  min-height: 570px;
+  margin: 0 calc(-1 * var(--page-gutter));
+  padding: 82px var(--page-gutter) 95px;
+  border-radius: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+.heroBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(90deg, #090909f5 0%, #090909c9 35%, #1804087a 70%, #09090950),
+    linear-gradient(0deg, #090909 0%, transparent 40%);
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(ellipse at 80% 50%, #ed153226, transparent 60%);
+}
+.heroCopy {
+  position: relative;
+  max-width: 740px;
+  padding: 0;
+}
+.hero .eyebrow {
+  color: white;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(58px, 6.4vw, 104px);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+.hero h1 > span {
+  color: #ff3045;
+}
+.heroDescription {
+  font-size: 21px;
+  margin-top: 22px;
+  max-width: none;
+  color: #d4d4dd;
+}
+.heroActions {
+  margin-top: 30px;
+  gap: 14px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.heroArcade {
+  position: absolute;
+  right: 6%;
+  top: 12%;
+  width: 390px;
+  height: 340px;
+  display: grid;
+  place-items: center;
+  transform: rotate(-12deg);
+  opacity: 0.65;
+}
+.heroArcade > svg {
+  width: 290px;
+  height: 290px;
+  color: #ff3045;
+  filter: drop-shadow(0 0 20px #e509145c);
+}
+.arcadeOrbit {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border: 1px solid #ff304555;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 20px #ff304508,
+    0 0 0 45px #ff304508;
+  background-image:
+    linear-gradient(#ff304517 1px, transparent 1px),
+    linear-gradient(90deg, #ff304517 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.heroArcade > span {
+  position: absolute;
+  bottom: -5px;
+  font-family: ui-monospace, monospace;
+  font-size: 14px;
+  letter-spacing: 0.23em;
+  color: #ff7482;
+}
+.heroBottom {
+  position: absolute;
+  bottom: 28px;
+  left: var(--page-gutter);
+  right: var(--page-gutter);
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #ffffff20;
+  padding-top: 18px;
+  font-family: ui-monospace, monospace;
+  color: #c7c7d0;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+}
+.heroBottom > span:first-child {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+.dailyStrip {
+  padding: 18px 0;
+  margin-top: 0;
+  font-size: 15px;
+  border-bottom: 1px solid #ffffff14;
+  border-top: 0;
+  gap: 20px;
+}
+.dailyStrip a {
+  min-height: 44px;
+  align-items: center;
+}
+.dailyStrip svg {
+  color: #ff5364;
+}
+.collection {
+  padding: 40px 0 48px;
+}
+.resetClock {
+  font-size: 14px;
+  gap: 10px;
+  white-space: nowrap;
+  padding-top: 0;
+}
+.resetClock strong {
+  color: #f5f5f5;
+  font-family: ui-monospace, monospace;
+  display: inline-block;
+  margin-left: 8px;
+}
+.filterRow {
+  margin: 0 0 32px;
+  border: 0;
+  padding: 0;
+  align-items: center;
+}
+.categoryFilters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.categoryFilters button {
+  font-size: 16px;
+  min-height: 46px;
+  padding: 10px 18px;
+  border: 1px solid #333338;
+  background: #181818;
+  border-radius: 5px;
+  gap: 9px;
+  font-weight: 700;
+}
+.categoryFilters button[aria-pressed="true"] {
+  background: #d9142b;
+  color: white;
+  border-color: #d9142b;
+}
+.categoryFilters button:hover {
+  color: white;
+  background: #333338;
+}
+.categoryFilters button[aria-pressed="true"]:hover {
+  background: #ed243b;
+}
+.modeSelect select {
+  font-size: 15px;
+  background: #181818;
+  border: 1px solid #333338;
+  border-radius: 5px;
+  min-height: 46px;
+  padding: 10px 14px;
+}
+.challengeRows {
+  display: grid;
+  gap: 34px;
+}
+.rowHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+.rowHeading h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 24px;
+  letter-spacing: -0.025em;
+}
+.rowHeading h3 svg {
+  color: #ff5364;
+}
+.rowHeading a {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: #b6b6bf;
+}
+.challengeGrid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 36px) / 3);
+  grid-template-columns: none;
+  gap: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 4px 4px 12px;
+  margin: -4px;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #181818;
+}
+.challengeTile {
+  display: block;
+  border: 0;
+  min-width: 0;
+  scroll-snap-align: start;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #181818;
+}
+.challengeTile:hover {
+  color: white;
+  transform: translateY(-3px);
+}
+.challengeTile:active {
+  transform: scale(0.98);
+}
+.tileVisual {
+  aspect-ratio: 1.55;
+  height: auto;
+  position: relative;
+  overflow: hidden;
+  background: #19191e;
+  border-radius: 7px;
+}
+.tileVisual::before {
+  display: none;
+}
+.tileVisual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #0009 0%, transparent 38%, #0009 65%, #000f 100%);
+  z-index: 1;
+  border: 1px solid #ffffff15;
+  border-radius: inherit;
+}
+.tileImage {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  transition: transform 0.35s;
+}
+.challengeTile:hover .tileImage {
+  transform: scale(1.05);
+}
+.tileCategory {
+  z-index: 2;
+  position: absolute;
+  top: 17px;
+  font-size: 14px;
+  color: white;
+  letter-spacing: 0;
+}
+.tileNumber {
+  z-index: 2;
+  position: absolute;
+  top: 17px;
+  font-size: 14px;
+  color: white;
+  letter-spacing: 0;
+}
+.tileCategory {
+  left: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.tileNumber {
+  right: 18px;
+  font-family: ui-monospace, monospace;
+  background: #0007;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.tileOverlay {
+  position: absolute;
+  bottom: 20px;
+  left: 22px;
+  right: 22px;
+  z-index: 2;
+}
+.tileOverlay h3 {
+  font-size: clamp(25px, 2.5vw, 36px);
+  font-weight: 800;
+  line-height: 1.12;
+  color: white;
+}
+.tileOverlay > span {
+  color: #d2d2d9;
+  font-size: 15px;
+  display: block;
+  margin-top: 8px;
+}
+.tilePlay {
+  position: absolute;
+  z-index: 3;
+  top: 45%;
+  right: 23px;
+  width: 49px;
+  height: 49px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #d9142b;
+  color: white;
+  transition: transform 0.2s;
+}
+.tilePlay svg {
+  margin-left: 3px;
+}
+.tilePlay :global(.spin) {
+  margin-left: 0;
+}
+.playIndicator {
+  display: inline-flex;
+}
+.challengeTile:hover .tilePlay {
+  transform: scale(1.1);
+}
+.tileFallback {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: radial-gradient(ellipse at 50% 30%, #730e24, #180a13 75%);
+  color: #ff697a;
+}
+.tileFallback > span {
+  font-size: 14px;
+  font-family: ui-monospace, monospace;
+  letter-spacing: 0.15em;
+  color: #ffb3bc;
+}
+.tileQuote .tilePlay {
+  display: none;
+}
+.tileQuote .tilePlay[data-pending="true"] {
+  display: grid;
+}
+.archiveBanner {
+  margin: 12px 0 56px;
+  padding: 35px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  border: 1px solid #ffffff20;
+  background: linear-gradient(100deg, #231015, #17171b);
+  border-radius: 7px;
+}
+.archiveBanner h2 {
+  font-size: clamp(27px, 3vw, 38px);
+  margin-top: 8px;
+}
+.archiveBannerAction {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.archiveBanner:hover {
+  color: white;
+  border-color: #ff3045;
+}
+.achievementStrip {
+  margin-bottom: 40px;
+}
+.achievementStrip > span:not(.eyebrow) {
+  font-size: 16px;
+}
+@media (min-width: 1500px) {
+  .challengeGrid {
+    grid-auto-columns: calc((100% - 54px) / 4);
+  }
+}
+@media (max-width: 1100px) {
+  .heroArcade {
+    right: 0;
+    opacity: 0.45;
+    width: 320px;
+  }
+  .heroCopy {
+    max-width: 670px;
+  }
+  .challengeGrid {
+    grid-auto-columns: calc((100% - 18px) / 2.3);
+  }
+}
+@media (max-width: 850px) {
+  .hero {
+    min-height: 525px;
+    padding-top: 65px;
+    padding-bottom: 95px;
+  }
+  .heroCopy {
+    max-width: 560px;
+  }
+  .hero h1 {
+    font-size: 76px;
+  }
+  .heroDescription {
+    font-size: 20px;
+  }
+  .heroArcade {
+    opacity: 0.2;
+    right: -40px;
+    top: 55px;
+  }
+  .dailyStrip {
+    font-size: 15px;
+  }
+  .resetClock {
+    font-size: 14px;
+  }
+  .rowHeading h3 {
+    font-size: 23px;
+  }
+}
+@media (max-width: 600px) {
+  .hero {
+    min-height: 505px;
+    padding-top: 46px;
+    padding-bottom: 90px;
+  }
+  .hero h1 {
+    font-size: clamp(49px, 13.2vw, 76px);
+  }
+  .hero .eyebrow {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .heroDescription {
+    font-size: 18px;
+    margin-top: 20px;
+  }
+  .heroActions {
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .heroActions > a {
+    font-size: 15px;
+    padding: 12px 17px;
+    min-height: 48px;
+  }
+  .heroArcade {
+    top: 110px;
+    right: -155px;
+    opacity: 0.16;
+  }
+  .heroBottom {
+    font-size: 12px;
+    bottom: 20px;
+    padding-top: 15px;
+  }
+  .dailyStrip {
+    margin-top: 0;
+    padding: 10px 0;
+    font-size: 14px;
+    gap: 12px;
+  }
+  .dailyStrip > span:nth-child(2) {
+    display: none;
+  }
+  .collection {
+    padding: 32px 0 30px;
+  }
+  .resetClock {
+    font-size: 14px;
+  }
+  .filterRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 23px;
+    padding: 0;
+  }
+  .categoryFilters {
+    gap: 7px;
+  }
+  .categoryFilters button {
+    font-size: 15px;
+    padding: 10px 9px;
+    gap: 6px;
+    min-height: 46px;
+  }
+  .categoryFilters button svg {
+    width: 17px;
+    height: 17px;
+  }
+  .modeSelect select {
+    font-size: 15px;
+    min-height: 44px;
+  }
+  .rowHeading {
+    margin-bottom: 10px;
+  }
+  .rowHeading h3 {
+    font-size: 21px;
+    gap: 9px;
+  }
+  .challengeRows {
+    gap: 22px;
+  }
+  .challengeGrid {
+    grid-auto-columns: 82%;
+    gap: 13px;
+    grid-template-columns: none;
+  }
+  .tileVisual {
+    aspect-ratio: 1.4;
+  }
+  .tileOverlay {
+    left: 18px;
+    bottom: 20px;
+    right: 18px;
+  }
+  .tileOverlay h3 {
+    font-size: 32px;
+  }
+  .tileOverlay > span {
+    font-size: 15px;
+  }
+  .tileCategory {
+    font-size: 13px;
+    top: 14px;
+  }
+  .tileNumber {
+    font-size: 13px;
+  }
+  .tileCategory {
+    left: 14px;
+  }
+  .tilePlay {
+    width: 44px;
+    height: 44px;
+    right: 18px;
+  }
+  .archiveBanner {
+    padding: 26px 22px;
+    align-items: flex-start;
+    flex-direction: column;
+    margin: 10px 0 30px;
+    gap: 18px;
+  }
+  .archiveBanner h2 {
+    font-size: 28px;
+  }
+  .archiveBannerAction {
+    font-size: 16px;
+  }
+}
+.tileVisual::after {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform: none;
+}
+.tileNumber {
+  left: auto;
+  bottom: auto;
+}
+.tileCategory {
+  bottom: auto;
+}
+.tileCategory svg {
+  width: 17px;
+  height: 17px;
+}
+.hero h1 {
+  margin: 0;
+}
+.modeSelect {
+  width: auto;
+  display: block;
+}
+@media (max-width: 600px) {
+  .resetClock {
+    margin: 0;
+  }
+  .modeSelect {
+    width: auto;
+    align-self: flex-start;
+  }
+  .tileNumber {
+    left: auto;
+    right: 12px;
+    top: 14px;
+  }
+}
+.tileClassic .tileFallback {
+  background: radial-gradient(ellipse at 35% 20%, #58152a, #16111d 75%);
+}
+@media (max-width: 600px) {
+  .categoryFilters {
+    flex-wrap: wrap;
+  }
+  .categoryFilters button {
+    flex: 0 1 auto;
+  }
+}
+.heroBackdrop {
+  object-fit: cover;
+}

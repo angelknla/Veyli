@@ -3,7 +3,7 @@ import { slugSchema } from '@/features/game/contracts';
 import { engine } from '@/features/game/service';
 import { apiError, json, privateHeaders, rateLimit } from '@/lib/http';
 import { playerIdentity } from '@/lib/security/player';
-export async function GET(request: Request, { params }: { params: Promise<{ key: string }> }) {
+export const GET = async (request: Request, { params }: { params: Promise<{ key: string }> }) => {
   try {
     const key = slugSchema.parse((await params).key);
     const player = await playerIdentity(false);
@@ -82,4 +82,4 @@ export async function GET(request: Request, { params }: { params: Promise<{ key:
   } catch (error) {
     return apiError(error);
   }
-}
+};

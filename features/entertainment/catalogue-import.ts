@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { itemInput } from '../admin/contracts';
+import { invalidateCatalogue } from './catalogue-search';
 import type { SourceTitle } from './source-client';
 
 type ItemRow = {
@@ -14,18 +15,18 @@ type ItemRow = {
   provenance: Record<string, unknown>;
   active: boolean;
 };
-export function titleIdentity(title: string, year: number, category: string) {
+export const titleIdentity = (title: string, year: number, category: string) => {
   return `${category}:${year}:${title
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '')}`;
-}
-export function sourceSlug(item: SourceTitle) {
+};
+export const sourceSlug = (item: SourceTitle) => {
   return `source-${item.category}-${item.provider}-${item.providerId.toLowerCase().replace(/[^a-z0-9-]/g, '-')}`;
-}
+};
 /** Retains existing IDs and editorial fields; source identity makes repeated imports idempotent. */
-export async function importCatalogue(db: SupabaseClient, titles: SourceTitle[], batch = false) {
+export const importCatalogue = async (db: SupabaseClient, titles: SourceTitle[], batch = false) => {
   const categories = await db.from('veyli_categories').select('id,slug');
   if (categories.error || !categories.data) throw new Error('Veyli categories unavailable');
   const ids = new Map(categories.data.map((x) => [x.slug, x.id as string]));
@@ -153,5 +154,7 @@ export async function importCatalogue(db: SupabaseClient, titles: SourceTitle[],
     const row = actual.get(value.slug);
     if (row) imported.set(key, { id: row.id, slug: row.slug, active: row.active });
   }
+  for (const category of new Set(titles.map((title) => title.category)))
+    invalidateCatalogue(category);
   return imported;
-}
+};

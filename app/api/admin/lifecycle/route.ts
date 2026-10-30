@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import { adminSnapshot, requireAdmin } from '@/features/admin/server';
+import { invalidateHub } from '@/features/game/service';
 import { isTestDatabaseEnabled } from '@/lib/environment';
 import { apiError, json, sameOrigin } from '@/lib/http';
 import { getSupabase } from '@/lib/supabase/server';
-export async function POST(request: Request) {
+export const POST = async (request: Request) => {
   try {
     await requireAdmin();
     sameOrigin(request);
@@ -36,8 +37,9 @@ export async function POST(request: Request) {
         .eq('id', input.id);
       if (error) return json({ error: 'content_locked' }, 409);
     }
+    invalidateHub();
     return json({ saved: true });
   } catch (error) {
     return apiError(error);
   }
-}
+};

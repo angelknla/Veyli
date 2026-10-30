@@ -6,21 +6,21 @@ type ImageOptions = { blur?: number; cropPercent?: number; coverPercent?: number
 const cachedRender = createBufferCache();
 const widths = [256, 384, 640, 750, 828, 1080, 1200];
 
-export function imageWidth(request: Request) {
+export const imageWidth = (request: Request) => {
   const requested = Number(new URL(request.url).searchParams.get('w')) || 1200;
   return widths.find((width) => width >= requested) || 1200;
-}
+};
 
 /** Both public clues and protected previews use this same server transformation. */
-export function renderClueImage(source: Buffer, options: ImageOptions) {
+export const renderClueImage = (source: Buffer, options: ImageOptions) => {
   const key = `${createHash('sha256').update(source).digest('hex')}:${JSON.stringify(options)}`;
   return cachedRender(key, () => transformImage(source, options));
-}
+};
 
-async function transformImage(
+const transformImage = async (
   source: Buffer,
   { blur = 0, cropPercent = 100, coverPercent = 0, width: outputWidth = 1200 }: ImageOptions
-) {
+) => {
   let image = sharp(source, { limitInputPixels: 40000000 }).rotate();
   const info = await image.metadata();
   if (cropPercent < 100 && info.width && info.height) {
@@ -57,4 +57,4 @@ async function transformImage(
       .toBuffer();
   }
   return image.jpeg({ quality: 86 }).toBuffer();
-}
+};

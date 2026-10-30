@@ -4,7 +4,7 @@ import { importImage } from '../features/entertainment/media-import';
 import { reviewedMovieScene, withReviewedMovieScene } from '../features/entertainment/scene-images';
 import type { SourceTitle } from '../features/entertainment/source-client';
 
-async function main() {
+const main = async () => {
   const url = process.env.SUPABASE_URL;
   const secret = process.env.SUPABASE_SECRET_KEY;
   if (!url || !secret) throw new Error('Supabase configuration missing');
@@ -93,7 +93,7 @@ async function main() {
   console.log(
     `${profiles.length} movie profiles reviewed; ${updated} frames corrected; answers and scoring unchanged`
   );
-}
+};
 main().catch(() => {
   console.error('Movie scene repair failed; existing answers and results are retained.');
   process.exitCode = 1;

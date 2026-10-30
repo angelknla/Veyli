@@ -9,7 +9,7 @@ type InstallPrompt = Event & {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 };
 
-export default function InstallApp() {
+const InstallApp = () => {
   const [prompt, setPrompt] = useState<InstallPrompt | null>(null);
   const [ios, setIos] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -53,7 +53,7 @@ export default function InstallApp() {
     };
   }, []);
 
-  async function install() {
+  const install = async () => {
     setError('');
     if (!prompt) {
       dialog.current?.showModal();
@@ -69,7 +69,7 @@ export default function InstallApp() {
       setPrompt(null);
       setBusy(false);
     }
-  }
+  };
 
   if (!prompt && !ios && !error) return null;
   return (
@@ -110,4 +110,6 @@ export default function InstallApp() {
       </dialog>
     </>
   );
-}
+};
+
+export default InstallApp;

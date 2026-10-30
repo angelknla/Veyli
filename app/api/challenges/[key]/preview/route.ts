@@ -5,7 +5,7 @@ import { apiError, json, rateLimit } from '@/lib/http';
 import { imageResponse } from '@/lib/image-response';
 import { imageWidth, renderClueImage } from '@/lib/media';
 
-export async function GET(request: Request, { params }: { params: Promise<{ key: string }> }) {
+export const GET = async (request: Request, { params }: { params: Promise<{ key: string }> }) => {
   try {
     const key = slugSchema.parse((await params).key);
     await rateLimit(request, 'preview');
@@ -21,4 +21,4 @@ export async function GET(request: Request, { params }: { params: Promise<{ key:
   } catch (error) {
     return apiError(error);
   }
-}
+};

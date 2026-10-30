@@ -1,0 +1,39 @@
+.providerForm {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+.providerForm input {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 15px;
+}
+.providerForm select {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 15px;
+}
+.providerResults {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.providerResults button {
+  background: var(--surface);
+  text-align: left;
+  border: 1px solid var(--border);
+  padding: 12px;
+  font-size: 15px;
+  border-radius: 4px;
+}
+.providerImport {
+  margin-bottom: 30px;
+}

@@ -1,0 +1,237 @@
+.pageShell {
+  max-width: var(--page-width);
+  margin: auto;
+  padding: 0 var(--page-gutter);
+}
+.narrowShell {
+  max-width: 920px;
+  padding-top: 50px;
+  padding-bottom: 80px;
+}
+.muted {
+  color: var(--muted);
+}
+.eyebrow {
+  font-weight: 700;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.wordmark {
+  line-height: 1;
+}
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+}
+.sectionHeading {
+  justify-content: space-between;
+}
+.emptyState {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+  background: #171717;
+  border-radius: 4px;
+}
+.emptyState h1 {
+  font-size: 40px;
+  color: var(--text);
+}
+.emptyState h3 {
+  color: var(--text);
+}
+.emptyState p {
+  max-width: 460px;
+  font-size: 16px;
+}
+.pageHeading {
+  padding: 58px 0 38px;
+}
+.pageHeading h1 {
+  margin: 12px 0 17px;
+}
+.pageHeading p:not(.eyebrow) {
+  color: var(--muted);
+}
+.prosePage {
+  padding: 50px 0 65px;
+  max-width: 720px;
+}
+.prosePage h1 {
+  margin-bottom: 32px;
+}
+.prosePage h2 {
+  margin: 35px 0 16px;
+}
+.prosePage p {
+  line-height: 1.9;
+  margin-bottom: 18px;
+}
+.prosePage li {
+  line-height: 1.9;
+  margin-bottom: 18px;
+}
+.prosePage a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.prosePage ul {
+  padding-left: 25px;
+}
+.prosePage ol {
+  padding-left: 25px;
+}
+.inlineError {
+  color: var(--error);
+  font-size: 15px;
+  line-height: 1.65;
+  padding-top: 12px;
+}
+@media (max-width: 600px) {
+  .wordmark {
+    font-size: 24px;
+  }
+  .pageHeading {
+    padding: 37px 0 28px;
+  }
+  .prosePage h1 {
+    font-size: 54px;
+  }
+  .prosePage h2 {
+    font-size: 32px;
+  }
+  .prosePage p {
+    font-size: 16px;
+  }
+  .prosePage li {
+    font-size: 16px;
+  }
+}
+.prosePage ul {
+  list-style: disc;
+}
+.prosePage ol {
+  list-style: decimal;
+}
+.eyebrow {
+  font-size: 14px;
+  letter-spacing: 0.12em;
+}
+.wordmark {
+  color: #ff3045;
+  font-size: 36px;
+  letter-spacing: -2px;
+  font-weight: 800;
+}
+.brandDot {
+  color: #ff3045;
+}
+.textLink {
+  min-height: 44px;
+  font-size: 15px;
+}
+.liveDot {
+  width: 8px;
+  height: 8px;
+  background: #ff3045;
+  display: inline-block;
+  border-radius: 50%;
+  box-shadow: 0 0 14px #ff304580;
+  flex-shrink: 0;
+}
+.sectionHeading {
+  align-items: center;
+  margin-bottom: 25px;
+  gap: 20px;
+}
+.sectionHeading h1 {
+  font-size: clamp(30px, 3vw, 44px);
+  margin: 0;
+}
+.sectionHeading h2 {
+  font-size: clamp(30px, 3vw, 44px);
+  margin: 0;
+}
+.sectionHeading p.muted {
+  font-size: 17px;
+  margin-top: 12px;
+}
+.pageHeading h1 {
+  font-size: clamp(38px, 5vw, 68px);
+}
+.pageHeading p:not(.eyebrow) {
+  font-size: 17px;
+  max-width: 600px;
+}
+.prosePage p {
+  font-size: 17px;
+  color: #d0d0d8;
+}
+.prosePage li {
+  font-size: 17px;
+  color: #d0d0d8;
+}
+.prosePage h1 {
+  font-size: clamp(38px, 5vw, 64px);
+}
+.prosePage h2 {
+  font-size: 30px;
+}
+@media (max-width: 850px) {
+  .wordmark {
+    font-size: 34px;
+  }
+  .sectionHeading {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .sectionHeading h1 {
+    font-size: 34px;
+  }
+  .sectionHeading h2 {
+    font-size: 34px;
+  }
+}
+@media (max-width: 600px) {
+  .sectionHeading {
+    margin-bottom: 22px;
+  }
+  .sectionHeading h1 {
+    font-size: 30px;
+  }
+  .sectionHeading h2 {
+    font-size: 30px;
+  }
+  .sectionHeading p.muted {
+    font-size: 16px;
+  }
+  .pageHeading {
+    padding-top: 38px;
+    margin-bottom: 28px;
+  }
+  .pageHeading h1 {
+    font-size: 42px;
+  }
+  .pageHeading p:not(.eyebrow) {
+    font-size: 16px;
+  }
+}
+.sectionHeading {
+  display: flex;
+}
+@media (max-width: 600px) {
+  .sectionHeading {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+}

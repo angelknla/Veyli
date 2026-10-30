@@ -1,9 +1,9 @@
 import type { SourceImage, SourceTitle } from '@/features/entertainment/source-client';
 
-export function sourceTitle(
+export const sourceTitle = (
   id: string | number,
   overrides: Partial<SourceTitle> = {}
-): SourceTitle {
+): SourceTitle => {
   return {
     provider: 'tmdb',
     providerId: String(id),
@@ -16,9 +16,9 @@ export function sourceTitle(
     images: [],
     ...overrides,
   };
-}
+};
 
-export function sourceImage(overrides: Partial<SourceImage> = {}): SourceImage {
+export const sourceImage = (overrides: Partial<SourceImage> = {}): SourceImage => {
   return {
     url: 'https://image.tmdb.org/t/p/w1280/example.jpg',
     role: 'frame',
@@ -29,4 +29,4 @@ export function sourceImage(overrides: Partial<SourceImage> = {}): SourceImage {
     licenseUrl: 'https://developer.themoviedb.org/docs/faq',
     ...overrides,
   };
-}
+};

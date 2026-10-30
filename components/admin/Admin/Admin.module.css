@@ -1,0 +1,218 @@
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 30px 0;
+  margin-bottom: 35px;
+}
+.statNumber {
+  font-family: Manrope, system-ui, sans-serif;
+  font-size: 56px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.statLabel {
+  color: var(--muted);
+}
+.statusMessage {
+  color: var(--muted);
+  margin-top: 8px;
+  min-height: 30px;
+}
+.adminShell {
+  padding-top: 45px;
+  padding-bottom: 70px;
+}
+.adminHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 30px;
+}
+.adminHeading p {
+  color: var(--muted);
+  font-size: 15px;
+}
+.adminTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.adminTabs button {
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  font-size: 15px;
+  border-radius: 4px;
+}
+.adminTabs button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--background);
+}
+.adminLayout {
+  display: grid;
+  gap: 30px;
+}
+.adminSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 700px;
+  overflow: auto;
+}
+.adminSidebar button {
+  background: var(--surface);
+  border: 0;
+  text-align: left;
+  padding: 12px;
+  border-radius: 3px;
+}
+.adminSidebar small {
+  display: block;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.adminEditor label {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.adminEditor textarea {
+  width: 100%;
+  min-height: 520px;
+  background: #171717;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 18px;
+  color: #d3d3d3;
+  font-family: ui-monospace, monospace;
+  line-height: 1.7;
+  resize: vertical;
+  tab-size: 2;
+}
+.adminEditor .editorActions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-top: 14px;
+}
+@media (max-width: 850px) {
+  .statsGrid {
+    gap: 15px;
+  }
+  .statNumber {
+    font-size: 47px;
+  }
+  .adminLayout {
+    gap: 20px;
+  }
+}
+@media (max-width: 600px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .adminLayout {
+    grid-template-columns: 1fr;
+  }
+  .adminSidebar {
+    max-height: 220px;
+  }
+  .adminEditor textarea {
+    min-height: 430px;
+  }
+  .adminHeading {
+    display: block;
+  }
+}
+.adminEditor .editorField textarea {
+  min-height: 95px;
+  font:
+    12px / 1.7 Manrope,
+    system-ui,
+    sans-serif;
+  padding: 10px 12px;
+}
+.editorListSearch {
+  width: 100%;
+  margin: 15px 0 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 15px;
+}
+.adminSidebar button.selected {
+  background: #292929;
+  color: var(--accent);
+}
+.editorActions {
+  flex-wrap: wrap;
+}
+@media (max-width: 600px) {
+  .adminEditor .editorField textarea {
+    font-size: 16px;
+  }
+}
+.statusMessage {
+  font-size: 14px;
+}
+.statusMessage:empty {
+  display: none;
+}
+.statsGrid {
+  gap: 25px;
+}
+.statNumber {
+  font-weight: 800;
+}
+.statLabel {
+  font-size: 16px;
+}
+.adminHeading h1 {
+  font-size: 44px;
+}
+.adminEditor textarea {
+  font-size: 15px;
+}
+.adminEditor label {
+  font-size: 15px;
+}
+.adminSidebar button {
+  font-size: 16px;
+}
+.adminSidebar small {
+  font-size: 14px;
+}
+.adminLayout {
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+.adminEditor {
+  min-width: 0;
+}
+.adminSidebar {
+  min-width: 0;
+}
+@media (max-width: 850px) {
+  .adminLayout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .statsGrid {
+    gap: 16px;
+  }
+  .statNumber {
+    font-size: 44px;
+  }
+  .statLabel {
+    font-size: 14px;
+  }
+  .adminHeading h1 {
+    font-size: 35px;
+  }
+  .adminTabs {
+    flex-wrap: wrap;
+  }
+}

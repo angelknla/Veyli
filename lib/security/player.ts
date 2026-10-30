@@ -1,7 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { issueToken, verifyToken } from './token';
-export async function playerIdentity(create = true): Promise<string | null> {
+export const playerIdentity = async (create = true): Promise<string | null> => {
   const secret = process.env.ANONYMOUS_COOKIE_SECRET;
   if (!secret || secret.length < 32) throw new Error('identity_unconfigured');
   const jar = await cookies();
@@ -17,4 +17,4 @@ export async function playerIdentity(create = true): Promise<string | null> {
     maxAge: 365 * 86400,
   });
   return verifyToken(token, secret);
-}
+};

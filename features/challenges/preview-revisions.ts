@@ -6,7 +6,7 @@ import { getSupabase } from '@/lib/supabase/server';
 
 type PreviewRow = { public_key: string; clues: unknown[] };
 /** Opaque content fingerprints keep browser thumbnails in sync after editorial changes. */
-export async function previewRevisions(keys: string[]): Promise<Record<string, string>> {
+export const previewRevisions = async (keys: string[]): Promise<Record<string, string>> => {
   if (!keys.length) return {};
   let rows: PreviewRow[];
   if (isTestDatabaseEnabled()) {
@@ -31,4 +31,4 @@ export async function previewRevisions(keys: string[]): Promise<Record<string, s
       createHash('sha256').update(JSON.stringify(row.clues)).digest('hex').slice(0, 16),
     ])
   );
-}
+};

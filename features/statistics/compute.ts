@@ -1,5 +1,8 @@
 import type { Completion } from '@/features/game/contracts';
-export function statistics(records: Completion[], today = new Date().toISOString().slice(0, 10)) {
+export const statistics = (
+  records: Completion[],
+  today = new Date().toISOString().slice(0, 10)
+) => {
   const unique = [...new Map(records.map((record) => [record.key, record])).values()];
   const won = unique.filter((record) => record.status === 'won');
   const days = [...new Set(won.map((record) => record.completedAt.slice(0, 10)))].sort();
@@ -48,14 +51,14 @@ export function statistics(records: Completion[], today = new Date().toISOString
     categories: performance('category'),
     modes: performance('mode'),
   };
-}
+};
 export type AchievementDefinition = {
   slug: string;
   name: string;
   description: string;
   rule: { metric: string; threshold: number };
 };
-export function earnedAchievements(records: Completion[], definitions: AchievementDefinition[]) {
+export const earnedAchievements = (records: Completion[], definitions: AchievementDefinition[]) => {
   const stats = statistics(records);
   return definitions.filter((definition) => {
     const metric = definition.rule.metric;
@@ -66,4 +69,4 @@ export function earnedAchievements(records: Completion[], definitions: Achieveme
         ] || 0;
     return value >= definition.rule.threshold;
   });
-}
+};

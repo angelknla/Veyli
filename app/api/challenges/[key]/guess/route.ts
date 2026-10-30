@@ -5,7 +5,7 @@ import { apiError, json, rateLimit, sameOrigin } from '@/lib/http';
 import { playerIdentity } from '@/lib/security/player';
 
 const input = z.object({ slug: slugSchema }).strict();
-export async function POST(request: Request, { params }: { params: Promise<{ key: string }> }) {
+export const POST = async (request: Request, { params }: { params: Promise<{ key: string }> }) => {
   try {
     sameOrigin(request);
     if (Number(request.headers.get('content-length') || 0) > 2048)
@@ -21,4 +21,4 @@ export async function POST(request: Request, { params }: { params: Promise<{ key
   } catch (error) {
     return apiError(error);
   }
-}
+};

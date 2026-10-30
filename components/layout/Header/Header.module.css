@@ -1,0 +1,97 @@
+.siteHeader {
+  margin: auto;
+  padding: 0 var(--page-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brandLink {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.mainNav {
+  display: flex;
+}
+.mainNav a:hover {
+  color: var(--text);
+}
+@media (max-width: 850px) {
+  .mainNav {
+    overflow: auto;
+    white-space: nowrap;
+    padding: 5px 0;
+  }
+}
+@media (max-width: 600px) {
+  .brandLink svg {
+    width: 23px;
+  }
+}
+.siteHeader {
+  height: 88px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  max-width: 1600px;
+  border-bottom: 0;
+  gap: 28px;
+  background: #090909;
+}
+.brandLink {
+  gap: 10px;
+}
+.brandLink > svg {
+  display: none;
+}
+.mainNav {
+  font-size: 16px;
+  gap: 26px;
+  color: #d7d7dc;
+}
+.mainNav a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+@media (max-width: 1100px) {
+  .siteHeader {
+    gap: 20px;
+  }
+  .mainNav {
+    gap: 16px;
+    font-size: 15px;
+  }
+}
+@media (max-width: 850px) {
+  .siteHeader {
+    height: auto;
+    min-height: 110px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .mainNav {
+    display: flex;
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 24px;
+    overflow-x: auto;
+    font-size: 15px;
+    border: 0;
+    padding-top: 0;
+  }
+  .mainNav a {
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 600px) {
+  .mainNav {
+    gap: 23px;
+    font-size: 15px;
+    padding-bottom: 3px;
+    scrollbar-width: none;
+  }
+}

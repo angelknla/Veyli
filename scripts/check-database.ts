@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-async function main() {
+const main = async () => {
   const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY!, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -14,7 +14,7 @@ async function main() {
     console.log(
       `Veyli database ready: ${data.categories.length} categories, ${data.modes.length} modes, ${data.challenges.length} daily challenges.`
     );
-}
+};
 void main().catch((error) => {
   console.error(error instanceof Error ? error.message : 'Setup failed.');
   process.exitCode = 1;

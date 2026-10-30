@@ -7,7 +7,7 @@ import { getSupabase } from '@/lib/supabase/server';
 
 const cachedSource = createBufferCache();
 
-export function clueSource(storagePath: string): Promise<Buffer> {
+export const clueSource = (storagePath: string): Promise<Buffer> => {
   return cachedSource(storagePath, async () => {
     if (isTestDatabaseEnabled()) {
       const { fixtureImage } = await import('@/tests/fixtures/media');
@@ -19,4 +19,4 @@ export function clueSource(storagePath: string): Promise<Buffer> {
     if (error || !data) throw new ServiceError('media_unavailable');
     return Buffer.from(await data.arrayBuffer());
   });
-}
+};

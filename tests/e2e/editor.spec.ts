@@ -110,7 +110,7 @@ test('updates browse thumbnails after edits and matches the initial gameplay ima
   expect(created.status()).toBe(200);
   const { id } = await created.json();
   await admin.goto(`/archive?date=${past}`);
-  const thumbnail = admin.locator('.tile-image').first();
+  const thumbnail = admin.locator('[data-testid~="tile-image"]').first();
   await expect(thumbnail).toBeVisible();
   const previousUrl = await thumbnail.getAttribute('src');
   expect(previousUrl).toContain('?v=');
@@ -124,5 +124,6 @@ test('updates browse thumbnails after edits and matches the initial gameplay ima
   const currentImage = await image(admin.request, currentUrl!);
   expect(currentImage).not.toEqual(previousImage);
   const state = await gameState(admin.request, path);
-  expect(currentImage).toEqual(await image(admin.request, state.clues[0].imageUrl!));
+  expect(currentImage).toEqual(await image(admin.request, state.clues[0][data-testid~="image"
+  ]Url!))
 });

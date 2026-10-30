@@ -5,17 +5,17 @@ import { isTestDatabaseEnabled } from '@/lib/environment';
 import { verifyAdminHeader } from '@/lib/security/token';
 import { getSupabase } from '@/lib/supabase/server';
 import type { AdminRecord, AdminSnapshot, Entity } from './contracts';
-export async function requireAdmin() {
+export const requireAdmin = async () => {
   if (!verifyAdminHeader((await headers()).get('authorization'), process.env.ADMIN_ACCESS_KEY))
     throw new ServiceError('admin_access_required', 401);
-}
-export async function adminSnapshot() {
+};
+export const adminSnapshot = async () => {
   await requireAdmin();
   return (await rpc('veyli_admin_snapshot')) as AdminSnapshot;
-}
+};
 
 /** Changing referenced answers or images would invalidate existing player results. */
-export async function protectReferencedContent(entity: Entity, payload: AdminRecord) {
+export const protectReferencedContent = async (entity: Entity, payload: AdminRecord) => {
   const item = entity === 'item' && 'category_id' in payload;
   const media = entity === 'media' && 'storage_path' in payload;
   if (!payload.id || (!item && !media)) return;
@@ -50,4 +50,4 @@ export async function protectReferencedContent(entity: Entity, payload: AdminRec
     referenced = Boolean(data?.length);
   }
   if (referenced) throw new ServiceError('content_locked', 409);
-}
+};

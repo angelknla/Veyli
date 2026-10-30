@@ -2,7 +2,7 @@ import type { PGlite } from '@electric-sql/pglite';
 import { aliases, catalogue, frameMedia, movieFacts } from './catalogue';
 
 /** Small, deterministic test content. This function never connects to Supabase. */
-export async function seedTestContent(db: PGlite) {
+export const seedTestContent = async (db: PGlite) => {
   const categories = (
     await db.query<{ id: string; slug: string }>('select id,slug from public.veyli_categories')
   ).rows;
@@ -98,4 +98,4 @@ export async function seedTestContent(db: PGlite) {
       }
     }
   }
-}
+};

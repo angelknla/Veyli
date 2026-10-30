@@ -1,0 +1,23 @@
+.archiveControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  flex-wrap: wrap;
+  padding-bottom: 24px;
+}
+.archiveDates {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.archiveDates a {
+  padding: 9px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.archiveDates a.active {
+  color: var(--accent);
+  border-color: #7c7c7c;
+}

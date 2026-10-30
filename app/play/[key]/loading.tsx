@@ -1,1 +1,2 @@
-export { default } from '@/features/game/components/GameLoading';
+import Loading from '@/components/pages/Loading/Loading';
+export default Loading;

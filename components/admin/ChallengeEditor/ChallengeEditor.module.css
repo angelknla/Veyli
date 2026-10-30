@@ -1,0 +1,40 @@
+.clueEditorList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.clueEditor {
+  background: #181818;
+  border: 1px solid #323232;
+  border-radius: 5px;
+  padding: 20px;
+}
+.clueEditorHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 13px;
+  gap: 12px;
+}
+.clueEditorHeader > div {
+  display: flex;
+  gap: 4px;
+}
+.clueEditorHeader button {
+  min-width: 30px;
+  min-height: 32px;
+}
+.editorAddActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+@media (max-width: 600px) {
+  .clueEditor {
+    padding: 15px;
+  }
+}
+.clueEditorHeader strong {
+  font-size: 16px;
+}

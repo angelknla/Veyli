@@ -7,7 +7,7 @@ import {
   validSourceTitle,
 } from './source-client';
 
-export function plainText(value: string) {
+export const plainText = (value: string) => {
   return value
     .replace(/<[^>]*>/g, ' ')
     .replace(/&amp;/g, '&')
@@ -15,11 +15,11 @@ export function plainText(value: string) {
     .replace(/&#39;/g, "'")
     .replace(/\s+/g, ' ')
     .trim();
-}
-export function permittedCommonsLicense(value: string) {
+};
+export const permittedCommonsLicense = (value: string) => {
   return /^(CC0|Public domain|CC BY(?:-SA)?(?:\s|$))/i.test(value) && !/\bNC\b|\bND\b/i.test(value);
-}
-export async function commonsImage(file: string): Promise<SourceImage | null> {
+};
+export const commonsImage = async (file: string): Promise<SourceImage | null> => {
   const filename = decodeURIComponent(file.split('/Special:FilePath/')[1] || file).replace(
     /^File:/,
     ''
@@ -74,7 +74,7 @@ export async function commonsImage(file: string): Promise<SourceImage | null> {
     license,
     licenseUrl: meta.LicenseUrl?.value || 'https://commons.wikimedia.org/wiki/Commons:Licensing',
   };
-}
+};
 const binding = z.object({ value: z.string() });
 const resultSchema = z.object({
   results: z.object({ bindings: z.array(z.record(z.string(), binding)) }),
@@ -84,7 +84,7 @@ type WikiEntity = {
   aliases: Record<string, { value: string }[]>;
   claims: Record<string, { mainsnak: { datavalue?: { value: unknown } } }[]>;
 };
-async function entities(ids: string[]) {
+const entities = async (ids: string[]) => {
   const result = new Map<string, WikiEntity>();
   for (let offset = 0; offset < ids.length; offset += 50) {
     const url = new URL('https://www.wikidata.org/w/api.php');
@@ -119,19 +119,19 @@ async function entities(ids: string[]) {
     for (const [id, entity] of Object.entries(data.entities)) result.set(id, entity);
   }
   return result;
-}
-function claimIds(entity: WikiEntity, property: string) {
+};
+const claimIds = (entity: WikiEntity, property: string) => {
   return (entity.claims[property] || []).slice(0, 3).flatMap((claim) => {
     const value = claim.mainsnak.datavalue?.value;
     return value && typeof value === 'object' && 'id' in value && typeof value.id === 'string'
       ? [value.id]
       : [];
   });
-}
-export async function discoverWikimedia(
+};
+export const discoverWikimedia = async (
   category: 'music' | 'pop-culture',
   limit = 60
-): Promise<SourceTitle[]> {
+): Promise<SourceTitle[]> => {
   const selection =
     category === 'music'
       ? '?item wdt:P434 ?mbid; wdt:P2031 ?start; wdt:P18 ?image; wikibase:sitelinks ?links. FILTER(?links>100)'
@@ -207,8 +207,8 @@ export async function discoverWikimedia(
     };
     return validSourceTitle(item) ? [item] : [];
   });
-}
-export async function hydrateWikimediaTitle(item: SourceTitle): Promise<SourceTitle> {
+};
+export const hydrateWikimediaTitle = async (item: SourceTitle): Promise<SourceTitle> => {
   const file = item.relatedIds?.commonsFile;
   if (file) {
     try {
@@ -279,8 +279,8 @@ export async function hydrateWikimediaTitle(item: SourceTitle): Promise<SourceTi
     }
   }
   return item;
-}
-export async function albumPoster(releaseGroup: string): Promise<SourceImage | null> {
+};
+export const albumPoster = async (releaseGroup: string): Promise<SourceImage | null> => {
   const groups = [
     ...new Set(releaseGroup.split(',').filter((id) => /^[0-9a-f-]{36}$/i.test(id))),
   ].slice(0, 100);
@@ -297,7 +297,7 @@ export async function albumPoster(releaseGroup: string): Promise<SourceImage | n
     if (image) return { ...image, role: 'poster' };
   }
   return null;
-}
+};
 export const sourceCategories: SourceCategory[] = [
   'movies',
   'television',

@@ -30,14 +30,14 @@ export type SyncReport = {
   unavailable: string[];
 };
 let currentSync: Promise<SyncReport> | null = null;
-export function syncSources(db: SupabaseClient, options: SyncOptions = {}) {
+export const syncSources = (db: SupabaseClient, options: SyncOptions = {}) => {
   if (currentSync) return currentSync;
   currentSync = runSync(db, options).finally(() => {
     currentSync = null;
   });
   return currentSync;
-}
-async function runSync(db: SupabaseClient, options: SyncOptions): Promise<SyncReport> {
+};
+const runSync = async (db: SupabaseClient, options: SyncOptions): Promise<SyncReport> => {
   const log = options.log || (() => {});
   const report: SyncReport = {
     catalogue: 0,
@@ -223,4 +223,4 @@ async function runSync(db: SupabaseClient, options: SyncOptions): Promise<SyncRe
     `${report.images} images available; ${report.scheduled} source rounds scheduled; ${report.preserved} existing rounds preserved`
   );
   return report;
-}
+};

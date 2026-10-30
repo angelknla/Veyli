@@ -16,10 +16,10 @@ const mediaSchema = z.object({
   cropPercent: z.number(),
   contentType: z.string(),
 });
-export async function GET(
+export const GET = async (
   request: Request,
   { params }: { params: Promise<{ key: string; position: string }> }
-) {
+) => {
   try {
     const { key, position } = await params;
     slugSchema.parse(key);
@@ -55,4 +55,4 @@ export async function GET(
   } catch (error) {
     return apiError(error);
   }
-}
+};

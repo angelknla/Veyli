@@ -21,7 +21,7 @@ const names = new Set([
 ]);
 
 /** Synthetic images keep integration tests independent of downloaded entertainment assets. */
-export function fixtureImage(storagePath: string): Promise<Buffer> {
+export const fixtureImage = (storagePath: string): Promise<Buffer> => {
   if (
     !process.env.VEYLI_INTEGRATION_DATABASE ||
     process.env.NODE_ENV === 'production' ||
@@ -50,4 +50,4 @@ export function fixtureImage(storagePath: string): Promise<Buffer> {
     );
   }
   return images.get(name)!;
-}
+};

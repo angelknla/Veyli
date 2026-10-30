@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
-import { AppIcon } from '@/lib/app-icon';
+import { AppIcon } from '@/components/AppIcon/AppIcon';
 
-export async function GET(_request: Request, { params }: { params: Promise<{ size: string }> }) {
+export const GET = async (_request: Request, { params }: { params: Promise<{ size: string }> }) => {
   const { size } = await params;
   if (size !== '192' && size !== '512') return new Response('Not found', { status: 404 });
   const dimension = Number(size);
@@ -10,4 +10,4 @@ export async function GET(_request: Request, { params }: { params: Promise<{ siz
     height: dimension,
     headers: { 'Cache-Control': 'public, max-age=86400' },
   });
-}
+};

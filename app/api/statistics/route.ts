@@ -4,7 +4,7 @@ import { rpc } from '@/lib/database';
 import { apiError, json } from '@/lib/http';
 import { playerIdentity } from '@/lib/security/player';
 export const dynamic = 'force-dynamic';
-export async function GET() {
+export const GET = async () => {
   try {
     const player = await playerIdentity(false);
     return json({
@@ -14,4 +14,4 @@ export async function GET() {
   } catch (error) {
     return apiError(error);
   }
-}
+};

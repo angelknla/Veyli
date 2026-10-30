@@ -11,10 +11,10 @@ export class ServiceError extends Error {
     super(code);
   }
 }
-export async function rpc(
+export const rpc = async (
   name: string,
   parameters: Record<string, unknown> = {}
-): Promise<unknown> {
+): Promise<unknown> => {
   if (!/^veyli_[a-z_]+$/.test(name)) throw new ServiceError('invalid_operation', 400);
   if (isTestDatabaseEnabled()) {
     const { embeddedRpc } = await import('@/tests/support/database');
@@ -37,4 +37,4 @@ export async function rpc(
     throw new ServiceError('database_unavailable');
   }
   return data;
-}
+};

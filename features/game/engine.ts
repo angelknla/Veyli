@@ -11,17 +11,21 @@ export class GameError extends Error {
 /** The database owns each transition; this React-independent service validates its public contract. */
 export class GameEngine {
   constructor(private repository: GameRepository) {}
-  async open(playerDigest: string, challengeKey: string): Promise<GameState> {
+  open = async (playerDigest: string, challengeKey: string): Promise<GameState> => {
     return this.transition(playerDigest, challengeKey);
-  }
-  async guess(
+  };
+  guess = async (
     playerDigest: string,
     challengeKey: string,
     selectedSlug: string
-  ): Promise<GameState> {
+  ): Promise<GameState> => {
     return this.transition(playerDigest, challengeKey, slugSchema.parse(selectedSlug));
-  }
-  private async transition(playerDigest: string, challengeKey: string, selectedSlug?: string) {
+  };
+  private transition = async (
+    playerDigest: string,
+    challengeKey: string,
+    selectedSlug?: string
+  ) => {
     z.string()
       .regex(/^[a-f0-9]{64}$/)
       .parse(playerDigest);
@@ -38,9 +42,9 @@ export class GameEngine {
     )
       throw new GameError('invalid_game_state');
     return state;
-  }
+  };
 }
-export function normalizeTitle(value: string): string {
+export const normalizeTitle = (value: string): string => {
   return value
     .normalize('NFKD')
     .replace(/\p{M}/gu, '')
@@ -48,4 +52,4 @@ export function normalizeTitle(value: string): string {
     .replace(/[^a-z0-9\s]/g, '')
     .trim()
     .replace(/\s+/g, ' ');
-}
+};

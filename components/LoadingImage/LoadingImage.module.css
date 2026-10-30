@@ -1,0 +1,46 @@
+.imageFrame {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  object-fit: inherit;
+  border-radius: inherit;
+}
+.imageFrameFill {
+  position: absolute;
+  inset: 0;
+}
+.imageFrame > img {
+  object-fit: inherit;
+}
+.imageFrame[data-loading="true"] > img {
+  opacity: 0;
+}
+.imageSkeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, #1c1c22 30%, #2b2b33 48%, #1c1c22 66%);
+  background-size: 250% 100%;
+  animation: image-shimmer 1.5s ease-in-out infinite;
+}
+.imageError {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+}
+@keyframes image-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .imageSkeleton {
+    animation: none;
+  }
+}

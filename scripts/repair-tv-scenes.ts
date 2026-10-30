@@ -8,7 +8,7 @@ import {
   televisionScene,
 } from '../features/entertainment/source-client';
 
-async function main() {
+const main = async () => {
   const url = process.env.SUPABASE_URL;
   const secret = process.env.SUPABASE_SECRET_KEY;
   if (!url || !secret) throw new Error('Supabase configuration missing');
@@ -126,7 +126,7 @@ async function main() {
     `${scenes} TV shows have aired episode stills; ${updated} frames corrected; answers/scoring unchanged; ${missing.length} source gaps`
   );
   if (missing.length) console.log('Unavailable episode stills:', missing.join(', '));
-}
+};
 main().catch(() => {
   console.error('TV scene repair failed; existing answers and player results retained.');
   process.exitCode = 1;

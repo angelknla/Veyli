@@ -12,7 +12,7 @@ const previewSchema = z.object({
   crop_percent: z.number(),
   media: z.object({ storage_path: z.string(), approved: z.literal(true) }),
 });
-function presentPreview(value: unknown, mode: string, category: string) {
+const presentPreview = (value: unknown, mode: string, category: string) => {
   if (!value) return null;
   const image = previewSchema.parse(value);
   const options = clueImageOptions(
@@ -25,9 +25,9 @@ function presentPreview(value: unknown, mode: string, category: string) {
     crop_percent: options.cropPercent,
     coverPercent: options.coverPercent,
   };
-}
+};
 /** Only an available round's first image. Never opens a player session. */
-export async function initialImage(key: string) {
+export const initialImage = async (key: string) => {
   if (isTestDatabaseEnabled()) {
     const { embeddedInitialImage } = await import('@/tests/support/database');
     const value = await embeddedInitialImage(key);
@@ -59,4 +59,4 @@ export async function initialImage(key: string) {
     .eq('kind', 'image')
     .maybeSingle();
   return presentPreview(data, mode, category);
-}
+};

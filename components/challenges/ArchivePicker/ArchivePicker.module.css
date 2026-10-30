@@ -1,0 +1,14 @@
+.datePicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 15px;
+}
+.datePicker input {
+  background: var(--surface);
+  padding: 8px 12px;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}

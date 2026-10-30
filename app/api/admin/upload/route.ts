@@ -3,7 +3,7 @@ import sharp from 'sharp';
 import { requireAdmin } from '@/features/admin/server';
 import { apiError, json, sameOrigin } from '@/lib/http';
 import { getSupabase } from '@/lib/supabase/server';
-export async function POST(request: Request) {
+export const POST = async (request: Request) => {
   try {
     await requireAdmin();
     sameOrigin(request);
@@ -33,4 +33,4 @@ export async function POST(request: Request) {
   } catch (error) {
     return apiError(error);
   }
-}
+};

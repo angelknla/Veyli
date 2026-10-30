@@ -4,14 +4,14 @@ import sharp from 'sharp';
 import { mediaInput } from '../admin/contracts';
 import type { SourceImage } from './source-client';
 
-export function imageUseAllowed(image: SourceImage, tmdbUsage = process.env.TMDB_IMAGE_USAGE) {
+export const imageUseAllowed = (image: SourceImage, tmdbUsage = process.env.TMDB_IMAGE_USAGE) => {
   return (
     image.policy === 'commons' ||
     image.policy === 'rawg' ||
     (image.policy === 'tmdb' && ['noncommercial', 'licensed'].includes(tmdbUsage || ''))
   );
-}
-export function imageHostAllowed(value: string) {
+};
+export const imageHostAllowed = (value: string) => {
   try {
     const url = new URL(value);
     return (
@@ -25,8 +25,8 @@ export function imageHostAllowed(value: string) {
   } catch {
     return false;
   }
-}
-export async function importImage(db: SupabaseClient, image: SourceImage) {
+};
+export const importImage = async (db: SupabaseClient, image: SourceImage) => {
   if (!imageUseAllowed(image) || !imageHostAllowed(image.url)) return null;
   const hash = createHash('sha256').update(image.url).digest('hex').slice(0, 20);
   const slug = `source-${hash}`;
@@ -108,4 +108,4 @@ export async function importImage(db: SupabaseClient, image: SourceImage) {
   const actual = await db.from('veyli_media').select('id,approved').eq('slug', slug).single();
   if (actual.error || !actual.data.approved) throw new Error('Source media registration failed');
   return actual.data.id as string;
-}
+};

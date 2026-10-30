@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-export default function manifest(): MetadataRoute.Manifest {
+const manifest = (): MetadataRoute.Manifest => {
   return {
     id: '/',
     name: 'Veyli',
@@ -17,4 +17,6 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: '/app-icon/512', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
   };
-}
+};
+
+export default manifest;

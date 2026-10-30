@@ -1,6 +1,6 @@
 import 'server-only';
 import { randomUUID } from 'node:crypto';
-export function reportFailure(code: string, operation: string) {
+export const reportFailure = (code: string, operation: string) => {
   const event = {
     level: 'error',
     service: 'veyli',
@@ -19,4 +19,4 @@ export function reportFailure(code: string, operation: string) {
       signal: AbortSignal.timeout(3000),
     }).catch(() => {});
   return event.requestId;
-}
+};

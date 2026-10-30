@@ -1,0 +1,106 @@
+.yearRange {
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 6px;
+}
+.yearRangeLabel {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-weight: 700;
+  align-self: center;
+}
+.yearRangeLabel svg {
+  color: #ff697a;
+}
+.yearRange label {
+  gap: 5px;
+  font-size: 14px;
+  color: #b6b6bf;
+}
+.yearRange input {
+  color: white;
+  border: 1px solid #55555f;
+  border-radius: 4px;
+}
+.yearRangeDivider {
+  color: #b6b6bf;
+}
+.yearRange button {
+  min-height: 44px;
+}
+.rangeActive {
+  align-self: center;
+  font-size: 14px;
+  color: #ff97a2;
+}
+.yearRange .inlineError {
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .rangeActive {
+    margin-left: 0;
+  }
+}
+.yearRange {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  align-items: center;
+  gap: 9px;
+  margin: -10px 0 28px;
+}
+.yearRangeLabel {
+  font-size: 15px;
+  color: #b6b6bf;
+  margin-right: 8px;
+  width: auto;
+}
+.yearRange label {
+  display: block;
+}
+.yearRange input {
+  width: 90px;
+  min-height: 44px;
+  padding: 8px 10px;
+  background: #ffffff05;
+  border-color: #333338;
+  font-size: 16px;
+}
+.yearRangeDivider {
+  padding-top: 0;
+  align-self: center;
+}
+.yearRange button {
+  font-size: 14px;
+  padding: 8px 12px;
+}
+.rangeActive {
+  margin-left: 8px;
+}
+@media (max-width: 600px) {
+  .yearRange {
+    padding: 0;
+    gap: 7px;
+    margin: -6px 0 25px;
+  }
+  .yearRangeLabel {
+    width: auto;
+    margin: 0 2px 0 0;
+  }
+  .yearRangeLabel svg {
+    width: 18px;
+  }
+  .yearRange input {
+    width: 76px;
+    font-size: 16px;
+    padding: 8px;
+  }
+  .yearRange button {
+    padding: 8px 10px;
+  }
+  .rangeActive {
+    width: 100%;
+    margin: 0;
+  }
+}

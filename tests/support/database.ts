@@ -3,7 +3,7 @@ import { PGlite } from '@electric-sql/pglite';
 import { seedTestContent } from '../fixtures/seed';
 
 const shared = globalThis as typeof globalThis & { veyliIntegrationDatabase?: Promise<PGlite> };
-async function database() {
+const database = async () => {
   if (process.env.NODE_ENV === 'production' || process.env.VERCEL)
     throw new Error('integration_database_disabled');
   if (!shared.veyliIntegrationDatabase)
@@ -23,8 +23,8 @@ async function database() {
       return db;
     })();
   return shared.veyliIntegrationDatabase;
-}
-export async function embeddedRpc(name: string, parameters: Record<string, unknown>) {
+};
+export const embeddedRpc = async (name: string, parameters: Record<string, unknown>) => {
   const db = await database();
   const entries = Object.entries(parameters);
   if (!entries.every(([key]) => /^[a-z_]+$/.test(key))) throw new Error('invalid_parameter');
@@ -34,12 +34,12 @@ export async function embeddedRpc(name: string, parameters: Record<string, unkno
     entries.map(([, value]) => value)
   );
   return result.rows[0]?.value ?? null;
-}
-export async function embeddedLifecycle(id: string, status: string) {
+};
+export const embeddedLifecycle = async (id: string, status: string) => {
   const db = await database();
   await db.query('update public.veyli_challenges set status=$1 where id=$2', [status, id]);
-}
-export async function embeddedReferences(id: string, kind: 'item' | 'media') {
+};
+export const embeddedReferences = async (id: string, kind: 'item' | 'media') => {
   const db = await database();
   const result = await db.query<{ exists: boolean }>(
     kind === 'item'
@@ -48,9 +48,9 @@ export async function embeddedReferences(id: string, kind: 'item' | 'media') {
     [id]
   );
   return result.rows[0].exists;
-}
+};
 
-export async function embeddedInitialImage(key: string) {
+export const embeddedInitialImage = async (key: string) => {
   const db = await database();
   const result = await db.query<{
     blur_amount: number;
@@ -68,9 +68,9 @@ export async function embeddedInitialImage(key: string) {
     [key]
   );
   return result.rows[0] ?? null;
-}
+};
 
-export async function embeddedPreviewRevisions(keys: string[]) {
+export const embeddedPreviewRevisions = async (keys: string[]) => {
   const db = await database();
   const result = await db.query<{ public_key: string; clues: unknown[] }>(
     `select c.public_key, jsonb_agg(jsonb_build_object(
@@ -79,8 +79,8 @@ export async function embeddedPreviewRevisions(keys: string[]) {
      from public.veyli_challenges c join public.veyli_clues cl on cl.challenge_id=c.id and cl.position=1
      left join public.veyli_media m on m.id=cl.media_id
      join public.veyli_modes mode on mode.id=c.mode_id
-     where c.active_revision and c.public_key=any($1) group by c.public_key`,
+     where c[data-testid~="active"]_revision and c.public_key=any($1) group by c.public_key`,
     [keys]
   );
   return result.rows;
-}
+};

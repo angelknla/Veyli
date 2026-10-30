@@ -12,7 +12,7 @@ type ClueShape = {
   blur_amount: number;
   crop_percent: number;
 };
-export function clueSignature(clues: ClueShape[]) {
+export const clueSignature = (clues: ClueShape[]) => {
   return JSON.stringify(
     [...clues]
       .sort((a, b) => a.position - b.position)
@@ -26,9 +26,9 @@ export function clueSignature(clues: ClueShape[]) {
         clue.crop_percent,
       ])
   );
-}
+};
 
-export function orderedPool(items: SourceTitle[]) {
+export const orderedPool = (items: SourceTitle[]) => {
   return [
     ...new Map(items.map((item) => [`${item.provider}:${item.providerId}`, item])).values(),
   ].sort((a, b) =>
@@ -37,9 +37,9 @@ export function orderedPool(items: SourceTitle[]) {
       .digest('hex')
       .localeCompare(createHash('sha256').update(`${b.provider}:${b.providerId}`).digest('hex'))
   );
-}
+};
 /** Rotate the whole pool, keeping each day's modes on separate answers. */
-export function dailyPicks(items: SourceTitle[], day: string, count: number) {
+export const dailyPicks = (items: SourceTitle[], day: string, count: number) => {
   const pool = orderedPool(items);
   if (pool.length < count) return [];
   const ordinal = Math.floor(Date.parse(`${day}T00:00:00Z`) / 86400000);
@@ -53,8 +53,12 @@ export function dailyPicks(items: SourceTitle[], day: string, count: number) {
     result.push(item);
   }
   return result.length === count ? result : [];
-}
-export function dailyModes(items: SourceTitle[], day: string, category: SourceTitle['category']) {
+};
+export const dailyModes = (
+  items: SourceTitle[],
+  day: string,
+  category: SourceTitle['category']
+) => {
   const frames = items.filter((item) => sourceModeImage(item, 'classic'));
   const core = dailyPicks(frames, day, category === 'movies' && frames.length >= 3 ? 3 : 2);
   if (!core.length) return [];
@@ -78,14 +82,14 @@ export function dailyModes(items: SourceTitle[], day: string, category: SourceTi
   if (poster?.images.some((image) => image.role === 'poster'))
     picks.push({ mode: 'poster', item: poster });
   return picks;
-}
-export function sourceClues(
+};
+export const sourceClues = (
   mode: string,
   mediaId: string,
   facts: SourceTitle['facts'],
   title = '',
   year?: number
-) {
+) => {
   const frame = {
     position: 1,
     kind: 'image' as const,
@@ -128,4 +132,4 @@ export function sourceClues(
       blur_amount: posterBlur(index),
     }));
   return [frame];
-}
+};

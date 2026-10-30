@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import pg from 'pg';
 
-async function main() {
+const main = async () => {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString)
     throw new Error(
@@ -19,7 +19,7 @@ async function main() {
   } finally {
     await client.end();
   }
-}
+};
 void main().catch((error) => {
   console.error(error instanceof Error ? error.message : 'Setup failed.');
   process.exitCode = 1;

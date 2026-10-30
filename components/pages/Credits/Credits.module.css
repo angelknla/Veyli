@@ -1,0 +1,32 @@
+.creditsList {
+  display: grid;
+  gap: 25px;
+  padding-bottom: 50px;
+}
+.creditEntry {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.creditEntry h2 {
+  font-family: Manrope, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin-bottom: 7px;
+}
+.creditEntry p {
+  color: var(--muted);
+}
+.creditEntry a {
+  color: var(--accent);
+  margin-right: 15px;
+  text-decoration: underline;
+}
+.creditEntry h2 {
+  font-size: 21px;
+}
+.creditEntry p {
+  font-size: 15px;
+}
+.creditEntry a {
+  font-size: 15px;
+}

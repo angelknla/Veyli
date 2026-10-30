@@ -4,7 +4,7 @@ import type { SourceImage, SourceTitle } from './source-client';
 const frames = reviewed.frames as Record<string, { title: string; filePath: string }>;
 
 /** TMDB backdrops include key art; only visually reviewed movie scenes qualify as frames. */
-export function reviewedMovieScene(item: SourceTitle): SourceImage | null {
+export const reviewedMovieScene = (item: SourceTitle): SourceImage | null => {
   if (item.provider !== 'tmdb' || item.category !== 'movies') return null;
   const frame = frames[item.providerId];
   if (!frame) return null;
@@ -18,9 +18,9 @@ export function reviewedMovieScene(item: SourceTitle): SourceImage | null {
     licenseUrl: 'https://developer.themoviedb.org/docs/faq',
     policy: 'tmdb',
   };
-}
+};
 
-export function sourceModeImage(item: SourceTitle, mode: string): SourceImage | null {
+export const sourceModeImage = (item: SourceTitle, mode: string): SourceImage | null => {
   if (mode === 'poster') return item.images.find((image) => image.role === 'poster') || null;
   if (item.provider === 'tmdb' && item.category === 'movies') return reviewedMovieScene(item);
   if (item.provider === 'tmdb' && item.category === 'television')
@@ -29,13 +29,13 @@ export function sourceModeImage(item: SourceTitle, mode: string): SourceImage | 
       null
     );
   return item.images.find((image) => image.role !== 'poster') || null;
-}
+};
 
-export function withReviewedMovieScene(item: SourceTitle): SourceTitle {
+export const withReviewedMovieScene = (item: SourceTitle): SourceTitle => {
   if (item.provider !== 'tmdb' || item.category !== 'movies') return item;
   const scene = reviewedMovieScene(item);
   return {
     ...item,
     images: [...(scene ? [scene] : []), ...item.images.filter((image) => image.role === 'poster')],
   };
-}
+};

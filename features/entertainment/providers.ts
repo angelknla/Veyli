@@ -15,7 +15,7 @@ export const providerInput = z.object({
   query: z.string().trim().min(2).max(100),
   kind: z.enum(['movies', 'television', 'games']),
 });
-async function requestJson(url: URL | string, options: RequestInit = {}) {
+const requestJson = async (url: URL | string, options: RequestInit = {}) => {
   try {
     const response = await fetch(url, {
       ...options,
@@ -27,18 +27,18 @@ async function requestJson(url: URL | string, options: RequestInit = {}) {
   } catch {
     throw new ServiceError('provider_unavailable', 503);
   }
-}
+};
 let twitchToken: { value: string; expiry: number } | null = null;
 let tokenRequest: Promise<string> | null = null;
-async function igdbToken() {
+const igdbToken = async () => {
   if (twitchToken && twitchToken.expiry > Date.now()) return twitchToken.value;
   if (!tokenRequest)
     tokenRequest = fetchIgdbToken().finally(() => {
       tokenRequest = null;
     });
   return tokenRequest;
-}
-async function fetchIgdbToken() {
+};
+const fetchIgdbToken = async () => {
   const client = process.env.IGDB_CLIENT_ID;
   const secret = process.env.IGDB_CLIENT_SECRET;
   if (!client || !secret) throw new ServiceError('provider_unconfigured', 503);
@@ -58,10 +58,10 @@ async function fetchIgdbToken() {
     expiry: Date.now() + (response.expires_in - 60) * 1000,
   };
   return response.access_token;
-}
-export async function searchProvider(
+};
+export const searchProvider = async (
   input: z.infer<typeof providerInput>
-): Promise<ProviderItem[]> {
+): Promise<ProviderItem[]> => {
   if (input.provider === 'tmdb') {
     const key = process.env.TMDB_API_KEY;
     if (!key) throw new ServiceError('provider_unconfigured', 503);
@@ -162,4 +162,4 @@ export async function searchProvider(
       aliases: item.alternative_names?.map((alias) => alias.name) || [],
     }))
     .filter((item) => item.year >= 1800);
-}
+};

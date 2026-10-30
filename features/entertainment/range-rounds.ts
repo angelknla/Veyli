@@ -12,10 +12,10 @@ const cached = new Map<string, { expires: number; rounds: Challenge[] }>();
 export const isRangeRound = (key: string) => /-range-[a-f0-9]{20}$/.test(key);
 
 /** Extra rounds share existing gameplay/scoring rules, without replacing any daily answer. */
-export async function availableRangeRound(
+export const availableRangeRound = async (
   db: SupabaseClient,
   key: string
-): Promise<Challenge | null> {
+): Promise<Challenge | null> => {
   if (!isRangeRound(key)) return null;
   const result = await db
     .from('veyli_challenges')
@@ -65,14 +65,14 @@ export async function availableRangeRound(
     category: { ...category, available: category.active },
     mode: { ...mode, progressive: mode.clues_per_miss > 0 },
   });
-}
+};
 
-export function rangePicks(
+export const rangePicks = (
   items: SourceTitle[],
   day: string,
   modes: string[],
   blocked: Set<string>
-) {
+) => {
   const chosen = new Set(blocked);
   return modes.flatMap((mode) => {
     const pool = items.filter((item) => {
@@ -84,17 +84,17 @@ export function rangePicks(
     chosen.add(identity(item));
     return [{ mode, item }];
   });
-}
+};
 const identity = (item: Pick<SourceTitle, 'title' | 'year'>) =>
   `${item.title.toLowerCase()}:${item.year}`;
 
-export function sourceRangeRounds(
+export const sourceRangeRounds = (
   db: SupabaseClient,
   date: string,
   range: YearRange,
   data: Pick<HubData, 'categories' | 'modes' | 'challenges'>,
   onlyCategory?: SourceCategory
-) {
+) => {
   const key = `${date}:${range.from}:${range.to}:${onlyCategory || 'all'}:${data.challenges
     .map((round) => round.key)
     .sort()
@@ -112,15 +112,15 @@ export function sourceRangeRounds(
     .finally(() => pending.delete(key));
   pending.set(key, work);
   return work;
-}
+};
 
-async function createRounds(
+const createRounds = async (
   db: SupabaseClient,
   date: string,
   range: YearRange,
   data: Pick<HubData, 'categories' | 'modes' | 'challenges'>,
   onlyCategory?: SourceCategory
-) {
+) => {
   if (date > new Date().toISOString().slice(0, 10)) return [];
   const [categories, modes, selected, extras] = await Promise.all([
     db.from('veyli_categories').select('id,slug').eq('active', true),
@@ -159,19 +159,7 @@ async function createRounds(
     release_year: number;
     provenance: { source?: SourceTitle };
   }[] = [];
-  for (let offset = 0; ; offset += 1000) {
-    const result = await db
-      .from('veyli_items')
-      .select('id,category_id,release_year,provenance')
-      .eq('active', true)
-      .gte('release_year', range.from)
-      .lte('release_year', range.to)
-      .order('id')
-      .range(offset, offset + 999);
-    if (result.error || !result.data) throw new Error('Source catalogue unavailable');
-    rows.push(...result.data);
-    if (result.data.length < 1000) break;
-  }
+  let catalogueLoaded = false;
   const result: Challenge[] = [];
   for (const category of categories.data.filter(
     (row) => !onlyCategory || row.slug === onlyCategory
@@ -214,6 +202,24 @@ async function createRounds(
         desired = desired.filter((mode) => mode !== name);
         break;
       }
+    }
+    if (!desired.length) continue;
+    // Existing rounds need no catalogue scan or media import.
+    if (!catalogueLoaded) {
+      for (let offset = 0; ; offset += 1000) {
+        let query = db
+          .from('veyli_items')
+          .select('id,category_id,release_year,provenance')
+          .eq('active', true)
+          .gte('release_year', range.from)
+          .lte('release_year', range.to);
+        if (onlyCategory) query = query.eq('category_id', category.id);
+        const page = await query.order('id').range(offset, offset + 999);
+        if (page.error || !page.data) throw new Error('Source catalogue unavailable');
+        rows.push(...page.data);
+        if (page.data.length < 1000) break;
+      }
+      catalogueLoaded = true;
     }
     const candidates = rows
       .filter(
@@ -302,4 +308,4 @@ async function createRounds(
     }
   }
   return result;
-}
+};

@@ -1,0 +1,115 @@
+.adminHelp {
+  color: var(--muted);
+  margin: 20px 0;
+}
+.adminHelp code {
+  color: var(--accent);
+}
+.editorFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
+}
+.editorField {
+  min-width: 0;
+}
+.editorField label {
+  margin-bottom: 7px;
+  color: var(--muted);
+}
+.editorField input:not([type="checkbox"]) {
+  width: 100%;
+  min-height: 42px;
+  background: #191919;
+  border: 1px solid #393939;
+  border-radius: 4px;
+  padding: 9px 11px;
+  color: var(--text);
+}
+.editorField select {
+  width: 100%;
+  min-height: 42px;
+  background: #191919;
+  border: 1px solid #393939;
+  border-radius: 4px;
+  padding: 9px 11px;
+  color: var(--text);
+}
+.editorField input[type="color"] {
+  height: 42px;
+  padding: 5px;
+}
+.editorField select[multiple] {
+  min-height: 100px;
+}
+.editorField p {
+  color: var(--muted);
+  margin-top: 7px;
+}
+.wideField {
+  grid-column: 1 / -1;
+}
+.editorField .editorCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+}
+.editorCheckbox input {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+.editorSectionTitle {
+  font-family: Manrope, system-ui, sans-serif;
+  font-size: 33px;
+  margin: 25px 0 13px;
+}
+.editorWarning {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-left: 2px solid var(--accent);
+  background: #242424;
+}
+.uploadNote {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  margin-top: 10px;
+}
+@media (max-width: 600px) {
+  .editorFields {
+    grid-template-columns: 1fr;
+  }
+  .wideField {
+    grid-column: auto;
+  }
+  .editorField input:not([type="checkbox"]) {
+    font-size: 17px;
+  }
+  .editorField select {
+    font-size: 17px;
+  }
+}
+.editorField input:not([type="checkbox"]) {
+  font-size: 16px;
+}
+.editorField select {
+  font-size: 16px;
+}
+.editorField label {
+  font-size: 15px;
+}
+.editorField p {
+  font-size: 14px;
+}
+.editorWarning {
+  font-size: 14px;
+}
+.uploadNote {
+  font-size: 14px;
+}
+.adminHelp {
+  font-size: 14px;
+}

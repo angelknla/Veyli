@@ -1,0 +1,25 @@
+.adminPreview {
+  padding: 25px;
+  background: var(--surface);
+  margin-top: 20px;
+}
+.adminPreview img {
+  width: 100%;
+  max-height: 350px;
+  object-fit: contain;
+}
+.adminPreview blockquote {
+  font-size: 25px;
+  font-family: Manrope, system-ui, sans-serif;
+  padding: 20px;
+}
+.previewClue {
+  padding-top: 20px;
+}
+.previewClue > .eyebrow {
+  display: block;
+  margin-bottom: 12px;
+}
+.previewClue img {
+  border-radius: 4px;
+}

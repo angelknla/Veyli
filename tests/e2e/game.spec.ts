@@ -20,13 +20,13 @@ test('holds image space while loading, retries failures and avoids repeat reques
     } else await route.continue();
   });
   await page.goto(playPath(), { waitUntil: 'domcontentloaded' });
-  const frame = page.locator('.classic-frame');
+  const frame = page.locator('[data-testid~="classic-frame"]');
   try {
-    await expect(frame.locator('.image-skeleton')).toBeVisible();
+    await expect(frame.locator('[data-testid~="image-skeleton"]')).toBeVisible();
     const bounds = await frame.boundingBox();
     release();
     await page.getByRole('button', { name: 'Retry image' }).click();
-    await expect(frame.locator('.image-skeleton')).toHaveCount(0);
+    await expect(frame.locator('[data-testid~="image-skeleton"]')).toHaveCount(0);
     expect(await frame.boundingBox()).toEqual(bounds);
     expect(reads).toBe(1);
     const src = await frame.locator('img').evaluate((image: HTMLImageElement) => image.currentSrc);
@@ -51,28 +51,28 @@ test('Classic keeps its frame, unlocks facts, restores progress and saves the wi
   expect((await context.cookies()).find((cookie) => cookie.name === 'veyli_player')?.httpOnly).toBe(
     true
   );
-  const frame = page.locator('.classic-frame img');
+  const frame = page.locator('[data-testid~="classic-frame"] img');
   const original = await frame.getAttribute('src');
-  await expect(page.locator('.fact-unlocked')).toHaveCount(0);
+  await expect(page.locator('[data-testid~="fact-unlocked"]')).toHaveCount(0);
   await choose(page, 'Inception', 2010);
   await expect(page.getByText('7 guesses left')).toBeVisible();
-  await expect(page.locator('.fact-unlocked')).toHaveCount(1);
-  await expect(page.locator('.fact-grid')).toContainText('1922');
-  await expect(page.locator('.fact-grid')).not.toContainText('Gothic horror');
+  await expect(page.locator('[data-testid~="fact-unlocked"]')).toHaveCount(1);
+  await expect(page.locator('[data-testid~="fact-grid"]')).toContainText('1922');
+  await expect(page.locator('[data-testid~="fact-grid"]')).not.toContainText('Gothic horror');
   expect(await frame.getAttribute('src')).toBe(original);
   await page.reload();
   await expect(page.getByText('7 guesses left')).toBeVisible();
-  await expect(page.locator('.guess-history')).toContainText('Inception');
+  await expect(page.locator('[data-testid~="guess-history"]')).toContainText('Inception');
   await choose(page, 'The Matrix', 1999);
-  await expect(page.locator('.fact-unlocked')).toHaveCount(2);
-  await expect(page.locator('.fact-grid')).toContainText('Gothic horror');
-  await expect(page.locator('.fact-grid')).not.toContainText('F. W. Murnau');
+  await expect(page.locator('[data-testid~="fact-unlocked"]')).toHaveCount(2);
+  await expect(page.locator('[data-testid~="fact-grid"]')).toContainText('Gothic horror');
+  await expect(page.locator('[data-testid~="fact-grid"]')).not.toContainText('F. W. Murnau');
   expect(await frame.getAttribute('src')).toBe(original);
   await choose(page, 'Nosferatu', 1922);
   await expect(page.getByRole('heading', { name: 'You knew it.' })).toBeVisible();
-  await expect(page.locator('.result-metrics')).toContainText('650');
+  await expect(page.locator('[data-testid~="result-metrics"]')).toContainText('650');
   await page.getByRole('link', { name: 'See your statistics' }).click();
-  await expect(page.locator('.stats-grid')).toContainText('1');
+  await expect(page.locator('[data-testid~="stats-grid"]')).toContainText('1');
   await expect(page.getByText('650', { exact: true })).toBeVisible();
 });
 

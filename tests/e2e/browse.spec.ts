@@ -2,27 +2,31 @@ import AxeBuilder from '@axe-core/playwright';
 import { choose, date, expect, playPath, roundKey, test } from './helpers';
 
 test('browses daily puzzles and whole category cards without a player login', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/today');
+  await expect(page).toHaveURL('/');
   await expect(page.getByRole('heading', { name: /PRESS PLAY/ })).toBeVisible();
-  await expect(page.locator('.challenge-tile')).toHaveCount(12);
+  await expect(page.getByRole('link', { name: 'Today', exact: true })).toHaveAttribute('href', '/');
+  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(12);
   await expect(page.getByRole('link', { name: /Sign in|Log in|Register|Profile/ })).toHaveCount(0);
   await page
     .getByRole('navigation', { name: 'Main navigation' })
     .getByRole('link', { name: 'Categories', exact: true })
     .click();
   await expect(page.getByRole('heading', { name: 'Pick your universe.' })).toBeVisible();
-  await expect(page.locator('.category-card')).toHaveCount(5);
+  await expect(page.locator('[data-testid~="category-card"]')).toHaveCount(5);
+  await expect(page.locator('[data-testid~="category-art"] svg')).toHaveCount(5);
+  await expect(page.locator('[data-testid~="category-card"] img')).toHaveCount(0);
   for (const [name, slug] of [
     ['Music', 'music'],
     ['Pop culture', 'pop-culture'],
   ]) {
     await page.goto('/categories');
     await page
-      .locator('.category-card')
+      .locator('[data-testid~="category-card"]')
       .filter({ has: page.getByRole('heading', { name, exact: true }) })
       .click({ position: { x: 15, y: 15 } });
     await expect(page).toHaveURL(new RegExp(`/categories/${slug}$`));
-    await expect(page.locator('.challenge-tile')).toHaveCount(2);
+    await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(2);
   }
   await page.goto('/archive');
   await expect(page.getByRole('heading', { name: 'Missed a day?' })).toBeVisible();
@@ -40,8 +44,8 @@ test('plays Music and Pop Culture through the common game interface', async ({ p
     await expect(page.getByText('8 guesses left')).toBeVisible();
     await choose(page, title, year);
     await expect(page.getByRole('heading', { name: 'You knew it.' })).toBeVisible();
-    await expect(page.locator('.answer-reveal')).toContainText(title);
-    await expect(page.locator('.result-metrics')).toContainText('1,000');
+    await expect(page.locator('[data-testid~="answer-reveal"]')).toContainText(title);
+    await expect(page.locator('[data-testid~="result-metrics"]')).toContainText('1,000');
   }
 });
 
@@ -68,11 +72,11 @@ test('shows navigation feedback and opens loaded challenges at the top', async (
     await page.goto('/');
     const link =
       category === 'music'
-        ? page.locator(`.challenge-tile[href="${path}"]`)
-        : page.getByRole('link', { name: 'Play today' });
+        ? page.locator(`[data-testid~="challenge-tile"][href="${path}"]`)
+        : page.getByRole('link', { name: 'Start challenge' });
     try {
       await link.click();
-      await expect(link.locator('.spin')).toBeVisible();
+      await expect(link.locator('[data-testid~="spin"]')).toBeVisible();
       await expect(link.getByRole('status')).toHaveText('Loading challenge…');
       const request = page.waitForRequest((request) => new URL(request.url()).pathname === api);
       releaseNavigation();
@@ -80,9 +84,9 @@ test('shows navigation feedback and opens loaded challenges at the top', async (
       await expect(page.getByRole('status').filter({ hasText: 'Setting the scene' })).toBeVisible();
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       releaseRound();
-      await expect(page.locator('.classic-frame img')).toBeVisible();
+      await expect(page.locator('[data-testid~="classic-frame"] img')).toBeVisible();
       await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-      await expect(page.locator('.classic-frame')).toBeInViewport();
+      await expect(page.locator('[data-testid~="classic-frame"]')).toBeInViewport();
     } finally {
       releaseNavigation();
       releaseRound();
@@ -95,18 +99,18 @@ test('persists the release-year filter without leaking hidden answer years', asy
   await page.getByRole('spinbutton', { name: 'From year' }).fill('2000');
   await page.getByRole('spinbutton', { name: 'To year' }).fill('2026');
   await page.getByRole('button', { name: 'Apply', exact: true }).click();
-  await expect(page.locator('.challenge-tile')).toHaveCount(4);
+  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(4);
   for (const href of await page
-    .locator('.challenge-tile')
+    .locator('[data-testid~="challenge-tile"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href'))))
     expect(href).toMatch(/-(games|music)-/);
   const filtered = await (await page.request.get('/api/hub?from=2000&to=2026')).json();
   expect(filtered.challenges).toHaveLength(4);
   expect(JSON.stringify(filtered)).not.toMatch(/answer_id|release_year|accepted_answer/);
   await page.reload();
-  await expect(page.locator('.challenge-tile')).toHaveCount(4);
+  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(4);
   await page.getByRole('button', { name: 'All years', exact: true }).click();
-  await expect(page.locator('.challenge-tile')).toHaveCount(12);
+  await expect(page.locator('[data-testid~="challenge-tile"]')).toHaveCount(12);
   expect((await page.request.get('/api/hub?from=2026&to=2000')).status()).toBe(400);
 });
 

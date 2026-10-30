@@ -1,11 +1,11 @@
-import Admin from '@/features/admin/components/Admin';
+import Admin from '@/components/admin/Admin/Admin';
 import { adminSnapshot } from '@/features/admin/server';
 export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Internal content studio',
   robots: { index: false, follow: false },
 };
-export default async function AdminPage() {
+const AdminPage = async () => {
   try {
     return (
       <Admin
@@ -30,4 +30,6 @@ export default async function AdminPage() {
       </div>
     );
   }
-}
+};
+
+export default AdminPage;

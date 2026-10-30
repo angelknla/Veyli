@@ -1,13 +1,21 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { after } from 'next/server';
 import type { CatalogueItem } from '../game/contracts';
 
 type SearchItem = CatalogueItem & { aliases: string[] };
 const catalogue = new Map<string, { expires: number; items: SearchItem[] }>();
 const pending = new Map<string, Promise<SearchItem[]>>();
-export function invalidateCatalogue(category: string) {
+const versions = new Map<string, number>();
+export const invalidateCatalogue = (category?: string) => {
+  if (!category) {
+    for (const key of new Set([...catalogue.keys(), ...pending.keys()])) invalidateCatalogue(key);
+    return;
+  }
+  versions.set(category, (versions.get(category) || 0) + 1);
   catalogue.delete(category);
-}
-export function normalizeTitle(value: string) {
+  pending.delete(category);
+};
+export const normalizeTitle = (value: string) => {
   return value
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -15,8 +23,8 @@ export function normalizeTitle(value: string) {
     .replace(/[^a-z0-9\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
-}
-export function matchCatalogue(items: SearchItem[], query: string, limit = 60): CatalogueItem[] {
+};
+export const matchCatalogue = (items: SearchItem[], query: string, limit = 60): CatalogueItem[] => {
   const needle = normalizeTitle(query);
   if (!needle) return [];
   return items
@@ -35,44 +43,53 @@ export function matchCatalogue(items: SearchItem[], query: string, limit = 60): 
     )
     .slice(0, limit)
     .map(({ item: { aliases: _aliases, ...item } }) => item);
-}
-export async function broadCatalogueSearch(db: SupabaseClient, query: string, category: string) {
+};
+export const broadCatalogueSearch = async (db: SupabaseClient, query: string, category: string) => {
   const hit = catalogue.get(category);
-  let items: SearchItem[];
-  if (hit && hit.expires > Date.now()) items = hit.items;
-  else {
-    let work = pending.get(category);
-    if (!work) {
-      work = (async () => {
-        const items: SearchItem[] = [];
-        for (let offset = 0; ; offset += 1000) {
-          const result = await db
-            .from('veyli_items')
-            .select(
-              'slug,title,release_year,category:veyli_categories!inner(slug,active),aliases:veyli_aliases(title)'
-            )
-            .eq('active', true)
-            .eq('category.active', true)
-            .eq('category.slug', category)
-            .order('id')
-            .range(offset, offset + 999);
-          if (result.error || !result.data) throw new Error('Catalogue unavailable');
-          for (const row of result.data)
-            items.push({
-              slug: row.slug,
-              title: row.title,
-              year: row.release_year,
-              category,
-              aliases: row.aliases.map((alias) => alias.title),
-            });
-          if (result.data.length < 1000) break;
-        }
-        catalogue.set(category, { expires: Date.now() + 30000, items });
-        return items;
-      })().finally(() => pending.delete(category));
-      pending.set(category, work);
-    }
-    items = await work;
+  if (hit) {
+    if (hit.expires <= Date.now())
+      after(async () => {
+        await refreshCatalogue(db, category).catch(() => {});
+      });
+    return matchCatalogue(hit.items, query);
   }
-  return matchCatalogue(items, query);
-}
+  return matchCatalogue(await refreshCatalogue(db, category), query);
+};
+const refreshCatalogue = (db: SupabaseClient, category: string) => {
+  let work = pending.get(category);
+  if (!work) {
+    const version = versions.get(category) || 0;
+    work = (async () => {
+      const items: SearchItem[] = [];
+      for (let offset = 0; ; offset += 1000) {
+        const result = await db
+          .from('veyli_items')
+          .select(
+            'slug,title,release_year,category:veyli_categories!inner(slug,active),aliases:veyli_aliases(title)'
+          )
+          .eq('active', true)
+          .eq('category.active', true)
+          .eq('category.slug', category)
+          .order('id')
+          .range(offset, offset + 999);
+        if (result.error || !result.data) throw new Error('Catalogue unavailable');
+        for (const row of result.data)
+          items.push({
+            slug: row.slug,
+            title: row.title,
+            year: row.release_year,
+            category,
+            aliases: row.aliases.map((alias) => alias.title),
+          });
+        if (result.data.length < 1000) break;
+      }
+      if (version === (versions.get(category) || 0))
+        catalogue.set(category, { expires: Date.now() + 300000, items });
+      return items;
+    })().finally(() => {
+      if (pending.get(category) === work) pending.delete(category);
+    });
+    pending.set(category, work);
+  }
+  return work;
+};

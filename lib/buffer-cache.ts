@@ -1,16 +1,16 @@
 /** Small process-local caches share pending work and never retain failed loads. */
-export function createBufferCache({ maxBytes = 32 * 1024 * 1024, ttl = 5 * 60 * 1000 } = {}) {
+export const createBufferCache = ({ maxBytes = 32 * 1024 * 1024, ttl = 5 * 60 * 1000 } = {}) => {
   const entries = new Map<string, { value: Buffer; expires: number }>();
   const pending = new Map<string, Promise<Buffer>>();
   let bytes = 0;
 
-  function remove(key: string) {
+  const remove = (key: string) => {
     const entry = entries.get(key);
     if (entry) bytes -= entry.value.length;
     entries.delete(key);
-  }
+  };
 
-  return function cached(key: string, load: () => Promise<Buffer>): Promise<Buffer> {
+  const cached = (key: string, load: () => Promise<Buffer>): Promise<Buffer> => {
     for (const [key, entry] of entries) if (entry.expires <= Date.now()) remove(key);
     const entry = entries.get(key);
     if (entry) {
@@ -35,4 +35,5 @@ export function createBufferCache({ maxBytes = 32 * 1024 * 1024, ttl = 5 * 60 * 
     pending.set(key, promise);
     return promise;
   };
-}
+  return cached;
+};

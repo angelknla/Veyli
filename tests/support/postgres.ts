@@ -4,34 +4,34 @@ import { seedTestContent } from '../fixtures/seed';
 
 export const platformSql = () => readFile('supabase/setup.sql', 'utf8');
 
-export async function createTestDatabase(seed = true) {
+export const createTestDatabase = async (seed = true) => {
   const db = new PGlite();
   await db.exec('create role anon; create role authenticated; create role service_role bypassrls;');
   await db.exec(await platformSql());
   if (seed) await seedTestContent(db);
   return db;
-}
+};
 
-export async function callRpc<T = unknown>(
+export const callRpc = async <T = unknown>(
   db: PGlite,
   name: string,
   values: unknown[] = []
-): Promise<T> {
+): Promise<T> => {
   const placeholders = values.map((_, index) => `$${index + 1}`).join(',');
   const result = await db.query<{ value: T }>(
     `select public.${name}(${placeholders}) value`,
     values
   );
   return result.rows[0].value;
-}
+};
 
-export async function copyRound(
+export const copyRound = async (
   db: PGlite,
   original: string,
   key: string,
   answer: string,
   active = false
-) {
+) => {
   const { rows } = await db.query<{ id: string }>(
     `
     insert into public.veyli_challenges(public_key,category_id,mode_id,answer_id,release_date,status,attempt_limit,scores,active_revision)
@@ -47,4 +47,4 @@ export async function copyRound(
     [id, original]
   );
   return id;
-}
+};

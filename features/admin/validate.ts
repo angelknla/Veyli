@@ -1,10 +1,10 @@
 import type { z } from 'zod';
 import type { AdminSnapshot, challengeInput } from './contracts';
 /** Presentation constraints live at this editorial boundary; the engine stays generic. */
-export function validatePublication(
+export const validatePublication = (
   payload: z.infer<typeof challengeInput>,
   snapshot: AdminSnapshot
-) {
+) => {
   const mode = snapshot.modes.find((value) => value.id === payload.mode_id);
   if (!mode) throw new Error('invalid_mode');
   if (payload.status === 'draft') return;
@@ -25,4 +25,4 @@ export function validatePublication(
     if (!media || media.kind !== clue.kind || !media.approved)
       throw new Error('approved_clues_required');
   }
-}
+};

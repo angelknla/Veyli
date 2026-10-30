@@ -1,0 +1,164 @@
+.answerSearch {
+  position: relative;
+}
+.answerLabel {
+  display: block;
+  margin-bottom: 12px;
+}
+.searchControl {
+  display: flex;
+  align-items: center;
+  border: 1px solid #3f3f3f;
+  border-radius: 5px;
+  padding: 6px 6px 6px 15px;
+  gap: 10px;
+}
+.searchControl > svg {
+  flex-shrink: 0;
+  color: #a2a2a2;
+}
+.searchControl input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  height: 40px;
+  outline-offset: 0;
+}
+.searchControl button {
+  flex-shrink: 0;
+}
+.searchHelp {
+  color: var(--muted);
+  margin-top: 12px;
+  max-width: 360px;
+}
+.suggestions {
+  position: absolute;
+  list-style: none;
+  top: 86px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid #494949;
+  border-radius: 5px;
+  box-shadow: 0 16px 40px #0008;
+  max-height: 300px;
+  overflow: auto;
+}
+.suggestions li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.suggestions li > span:last-child {
+  white-space: nowrap;
+}
+.suggestions li[aria-disabled="true"] {
+  opacity: 0.6;
+}
+.suggestions .searchMessage {
+  color: var(--muted);
+  font-size: 14px;
+  cursor: default;
+}
+@media (max-width: 1100px) {
+  .searchControl button {
+    padding-inline: 10px;
+  }
+}
+@media (max-width: 600px) {
+  .searchControl {
+    gap: 8px;
+    padding-left: 10px;
+  }
+  .searchControl button {
+    gap: 7px;
+  }
+}
+.suggestions div[role="option"] {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.suggestions div[role="option"] > span:last-child {
+  white-space: nowrap;
+}
+.suggestions div[aria-disabled="true"] {
+  opacity: 0.6;
+}
+.suggestions .searchMessage {
+  padding: 12px;
+}
+.answerLabel {
+  font-size: 18px;
+  font-weight: 700;
+}
+.searchControl {
+  background: #18181d;
+  border-color: #5b5b65;
+  min-height: 58px;
+}
+.searchControl input {
+  font-size: 17px;
+  min-width: 0;
+}
+.searchControl button {
+  padding: 10px 16px;
+  font-size: 16px;
+  min-height: 44px;
+}
+.searchHelp {
+  font-size: 14px;
+}
+.suggestions {
+  background: #242429;
+  border-color: #555;
+}
+.suggestions div[role="option"] {
+  font-size: 16px;
+  padding: 12px 15px;
+  min-height: 48px;
+}
+.suggestions li {
+  font-size: 16px;
+  padding: 12px 15px;
+  min-height: 48px;
+}
+.suggestions div[aria-selected="true"] {
+  background: #57202e;
+}
+.suggestions li[aria-selected="true"] {
+  background: #57202e;
+}
+.suggestions div[role="option"] > span:last-child {
+  font-size: 14px;
+  color: #d5d5df;
+}
+.suggestions li > span:last-child {
+  font-size: 14px;
+  color: #d5d5df;
+}
+@media (max-width: 600px) {
+  .answerLabel {
+    font-size: 18px;
+  }
+  .searchControl input {
+    font-size: 16px;
+  }
+  .searchControl button {
+    font-size: 15px;
+    padding: 10px 13px;
+  }
+}
+@media (min-width: 1000px) {
+  :global([data-mode="classic"]) .answerSearch {
+    flex-shrink: 0;
+  }
+}

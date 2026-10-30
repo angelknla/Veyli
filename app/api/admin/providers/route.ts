@@ -1,7 +1,7 @@
 import { requireAdmin } from '@/features/admin/server';
 import { providerInput, searchProvider } from '@/features/entertainment/providers';
 import { apiError, json } from '@/lib/http';
-export async function GET(request: Request) {
+export const GET = async (request: Request) => {
   try {
     await requireAdmin();
     const params = new URL(request.url).searchParams;
@@ -14,4 +14,4 @@ export async function GET(request: Request) {
   } catch (error) {
     return apiError(error);
   }
-}
+};

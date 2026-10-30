@@ -3,7 +3,7 @@
 const pending = new Map<string, Promise<unknown>>();
 
 /** Coalesce simultaneous reads without retaining game state or catalogue results. */
-export function fetchJson<T = unknown>(url: string): Promise<T> {
+export const fetchJson = <T = unknown>(url: string): Promise<T> => {
   const existing = pending.get(url);
   if (existing) return existing as Promise<T>;
   const promise = fetch(url, { cache: 'no-store' })
@@ -15,4 +15,4 @@ export function fetchJson<T = unknown>(url: string): Promise<T> {
     .finally(() => pending.delete(url));
   pending.set(url, promise);
   return promise;
-}
+};

@@ -4,7 +4,7 @@ import { clueSource } from '@/lib/clue-source';
 import { apiError, json } from '@/lib/http';
 import { imageResponse } from '@/lib/image-response';
 import { imageWidth, renderClueImage } from '@/lib/media';
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export const GET = async (request: Request, { params }: { params: Promise<{ id: string }> }) => {
   try {
     await requireAdmin();
     const id = z.uuid().parse((await params).id);
@@ -40,4 +40,4 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   } catch (error) {
     return apiError(error);
   }
-}
+};

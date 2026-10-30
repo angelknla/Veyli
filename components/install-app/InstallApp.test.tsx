@@ -23,7 +23,7 @@ afterEach(() => {
   Reflect.deleteProperty(HTMLDialogElement.prototype, 'close');
 });
 
-function offerInstall(outcome: 'accepted' | 'dismissed' = 'accepted') {
+const offerInstall = (outcome: 'accepted' | 'dismissed' = 'accepted') => {
   const event = new Event('beforeinstallprompt', { cancelable: true });
   const prompt = vi.fn().mockResolvedValue(undefined);
   Object.assign(event, { prompt, userChoice: Promise.resolve({ outcome }) });
@@ -31,7 +31,7 @@ function offerInstall(outcome: 'accepted' | 'dismissed' = 'accepted') {
     window.dispatchEvent(event);
   });
   return { event, prompt };
-}
+};
 
 it.each(['accepted', 'dismissed'] as const)('uses the native %s prompt once', async (outcome) => {
   render(<InstallApp />);

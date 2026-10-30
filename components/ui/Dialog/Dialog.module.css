@@ -1,0 +1,60 @@
+.dialogOverlay {
+  position: fixed;
+  inset: 0;
+  background: #070707c4;
+  z-index: 80;
+  backdrop-filter: blur(5px);
+}
+.dialogContent {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 81;
+  background: #1b1b1b;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  width: min(92vw, 480px);
+  max-height: 85vh;
+  overflow: auto;
+  padding: 35px;
+}
+.dialogTitle {
+  font-family: Manrope, system-ui, sans-serif;
+  line-height: 1.1;
+  margin: 0 28px 16px 0;
+}
+.dialogContent > .muted {
+  font-size: 15px;
+}
+.dialogClose {
+  position: absolute;
+  right: 13px;
+  top: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  width: 34px;
+  height: 34px;
+  border-radius: 5px;
+}
+@media (max-width: 600px) {
+  .dialogContent {
+    padding: 30px 25px;
+  }
+}
+.dialogTitle {
+  color: var(--text);
+}
+.dialogTitle {
+  font-size: 32px;
+  font-weight: 800;
+}
+@media (max-width: 600px) {
+  .dialogTitle {
+    font-size: 29px;
+  }
+}

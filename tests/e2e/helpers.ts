@@ -30,7 +30,7 @@ export const test = base.extend<{ admin: Page }>({
   },
 });
 
-export async function choose(page: Page, title: string, year: number) {
+export const choose = async (page: Page, title: string, year: number) => {
   await page.getByRole('combobox', { name: 'What’s your guess?' }).fill(title);
   await page
     .getByRole('option')
@@ -39,27 +39,27 @@ export async function choose(page: Page, title: string, year: number) {
     .first()
     .click();
   await page.getByRole('button', { name: 'Guess', exact: true }).click();
-}
+};
 
-export async function gameState(request: APIRequestContext, path: string): Promise<GameState> {
+export const gameState = async (request: APIRequestContext, path: string): Promise<GameState> => {
   const response = await request.get(path);
   expect(response.status()).toBe(200);
   return response.json();
-}
+};
 
-export function submit(request: APIRequestContext, path: string, slug: string) {
+export const submit = (request: APIRequestContext, path: string, slug: string) => {
   return request.post(`${path}/guess`, { headers: { Origin: origin }, data: { slug } });
-}
+};
 
-export async function image(request: APIRequestContext, path: string) {
+export const image = async (request: APIRequestContext, path: string) => {
   const response = await request.get(path);
   expect(response.status()).toBe(200);
   expect(response.headers()['content-type']).toMatch(/^image\//);
   return response.body();
-}
+};
 
-export function idFor(records: AdminRecord[], slug: string) {
+export const idFor = (records: AdminRecord[], slug: string) => {
   const record = records.find((record) => record.slug === slug);
   expect(record, `Missing fixture: ${slug}`).toBeDefined();
   return String(record!.id);
-}
+};

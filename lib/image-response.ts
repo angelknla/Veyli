@@ -3,11 +3,11 @@ import 'server-only';
 import { createHash } from 'node:crypto';
 
 /** Call only after checking availability or player/admin access, including on revalidation. */
-export function imageResponse(
+export const imageResponse = (
   request: Request,
   buffer: Buffer,
   audience: 'public' | 'player' | 'admin'
-) {
+) => {
   const etag = `"${createHash('sha256').update(buffer).digest('hex')}"`;
   const headers = {
     'Content-Type': 'image/jpeg',
@@ -28,4 +28,4 @@ export function imageResponse(
   )
     return new Response(null, { status: 304, headers });
   return new Response(new Uint8Array(buffer), { headers });
-}
+};

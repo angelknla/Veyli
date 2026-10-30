@@ -15,11 +15,11 @@ const empty: Snapshot = { records: [], definitions: [], storageAvailable: true, 
 let snapshot = empty;
 let initialized = false;
 const listeners = new Set<() => void>();
-function publish(next: Snapshot) {
+const publish = (next: Snapshot) => {
   snapshot = next;
   for (const listener of listeners) listener();
-}
-function save() {
+};
+const save = () => {
   try {
     localStorage.setItem(
       KEY,
@@ -28,8 +28,8 @@ function save() {
   } catch {
     publish({ ...snapshot, storageAvailable: false });
   }
-}
-export async function syncProgress() {
+};
+export const syncProgress = async () => {
   try {
     const response = await fetch('/api/statistics', { cache: 'no-store' });
     if (!response.ok) return;
@@ -59,8 +59,8 @@ export async function syncProgress() {
   } catch {
     publish({ ...snapshot, online: false });
   }
-}
-function initialize() {
+};
+const initialize = () => {
   if (initialized) return;
   initialized = true;
   try {
@@ -77,14 +77,14 @@ function initialize() {
     publish({ ...snapshot, storageAvailable: false });
   }
   void syncProgress();
-}
-function subscribe(listener: () => void) {
+};
+const subscribe = (listener: () => void) => {
   listeners.add(listener);
   return () => {
     listeners.delete(listener);
   };
-}
-export function useProgress() {
+};
+export const useProgress = () => {
   const state = useSyncExternalStore(
     subscribe,
     () => snapshot,
@@ -92,8 +92,8 @@ export function useProgress() {
   );
   useEffect(initialize, []);
   return state;
-}
-export function recordCompletion(state: GameState) {
+};
+export const recordCompletion = (state: GameState) => {
   if (state.status === 'in_progress' || !state.completedAt) return;
   initialize();
   const record: Completion = {
@@ -113,4 +113,4 @@ export function recordCompletion(state: GameState) {
     ],
   });
   save();
-}
+};

@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { syncSources } from '../features/entertainment/sync';
 import { sourceCategories } from '../features/entertainment/wikimedia';
 
-async function main() {
+const main = async () => {
   const url = process.env.SUPABASE_URL;
   const secret = process.env.SUPABASE_SECRET_KEY;
   if (!url || !secret) throw new Error('Supabase configuration missing');
@@ -26,15 +26,15 @@ async function main() {
     log: console.log,
   });
   console.log(JSON.stringify(report, null, 2));
-}
-function numericOption(name: string, minimum: number, maximum: number) {
+};
+const numericOption = (name: string, minimum: number, maximum: number) => {
   const value = process.argv.find((arg) => arg.startsWith(`--${name}=`));
   if (!value) return undefined;
   const number = Number(value.split('=')[1]);
   if (!Number.isInteger(number) || number < minimum || number > maximum)
     throw new Error('Invalid sync option');
   return number;
-}
+};
 main().catch(() => {
   console.error('Veyli source sync failed. Existing gameplay data has been retained.');
   process.exitCode = 1;

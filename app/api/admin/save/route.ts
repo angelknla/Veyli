@@ -2,9 +2,11 @@ import { z } from 'zod';
 import { adminSchemas, challengeInput } from '@/features/admin/contracts';
 import { adminSnapshot, protectReferencedContent, requireAdmin } from '@/features/admin/server';
 import { validatePublication } from '@/features/admin/validate';
+import { invalidateCatalogue } from '@/features/entertainment/catalogue-search';
+import { invalidateHub } from '@/features/game/service';
 import { rpc, ServiceError } from '@/lib/database';
 import { apiError, json, sameOrigin } from '@/lib/http';
-export async function POST(request: Request) {
+export const POST = async (request: Request) => {
   try {
     await requireAdmin();
     sameOrigin(request);
@@ -25,7 +27,10 @@ export async function POST(request: Request) {
       }
     }
     await protectReferencedContent(body.entity, payload);
-    return json(await rpc('veyli_admin_save', { entity: body.entity, payload }));
+    const result = await rpc('veyli_admin_save', { entity: body.entity, payload });
+    invalidateHub();
+    invalidateCatalogue();
+    return json(result);
   } catch (error) {
     if (error instanceof z.ZodError)
       return json(
@@ -40,4 +45,4 @@ export async function POST(request: Request) {
       );
     return apiError(error);
   }
-}
+};

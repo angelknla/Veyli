@@ -5,7 +5,7 @@ import { syncSources } from './sync';
 
 let nextCheck = 0;
 /** Refresh the rolling source queue after serving cached puzzles, at most once a day. */
-export function maintainSourceQueue() {
+export const maintainSourceQueue = () => {
   if (
     process.env.SOURCE_SYNC_ENABLED !== 'true' ||
     process.env.VEYLI_INTEGRATION_DATABASE ||
@@ -31,4 +31,4 @@ export function maintainSourceQueue() {
       /* Cached source puzzles and original fallback content remain playable. */
     }
   });
-}
+};

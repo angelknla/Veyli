@@ -37,7 +37,7 @@ let musicQueue = Promise.resolve();
 let musicLastRequest = 0;
 
 /** Bounded caching and request coalescing; never include upstream URLs/keys in errors. */
-export async function sourceJson(url: URL | string, timeout = 12000): Promise<unknown> {
+export const sourceJson = async (url: URL | string, timeout = 12000): Promise<unknown> => {
   const key = String(url);
   const hit = cached.get(key);
   if (hit && hit.expires > Date.now()) return hit.data;
@@ -75,8 +75,8 @@ export async function sourceJson(url: URL | string, timeout = 12000): Promise<un
   })();
   pending.set(key, work);
   return work;
-}
-function tmdbUrl(path: string, params: Record<string, string> = {}) {
+};
+const tmdbUrl = (path: string, params: Record<string, string> = {}) => {
   const key = process.env.TMDB_API_KEY;
   if (!key) throw new SourceError('provider_unconfigured');
   const url = new URL(`https://api.themoviedb.org/3/${path}`);
@@ -84,15 +84,15 @@ function tmdbUrl(path: string, params: Record<string, string> = {}) {
   url.searchParams.set('language', 'en-US');
   for (const [name, value] of Object.entries(params)) url.searchParams.set(name, value);
   return url;
-}
-function rawgUrl(path: string, params: Record<string, string> = {}) {
+};
+const rawgUrl = (path: string, params: Record<string, string> = {}) => {
   const key = process.env.RAWG_API_KEY;
   if (!key) throw new SourceError('provider_unconfigured');
   const url = new URL(`https://api.rawg.io/api/${path}`);
   url.searchParams.set('key', key);
   for (const [name, value] of Object.entries(params)) url.searchParams.set(name, value);
   return url;
-}
+};
 const named = z.object({ name: z.string() });
 const tmdbResult = z.object({
   id: z.number(),
@@ -104,10 +104,10 @@ const tmdbResult = z.object({
   first_air_date: z.string().optional(),
   adult: z.boolean().optional(),
 });
-function tmdbTitle(
+const tmdbTitle = (
   item: z.infer<typeof tmdbResult>,
   category: 'movies' | 'television'
-): SourceTitle {
+): SourceTitle => {
   const type = category === 'movies' ? 'movie' : 'tv';
   return {
     provider: 'tmdb',
@@ -120,14 +120,14 @@ function tmdbTitle(
     facts: [],
     images: [],
   };
-}
+};
 const rawgResult = z.object({
   id: z.number(),
   slug: z.string(),
   name: z.string(),
   released: z.string().nullable(),
 });
-function rawgTitle(item: z.infer<typeof rawgResult>): SourceTitle {
+const rawgTitle = (item: z.infer<typeof rawgResult>): SourceTitle => {
   return {
     provider: 'rawg',
     providerId: String(item.id),
@@ -139,8 +139,8 @@ function rawgTitle(item: z.infer<typeof rawgResult>): SourceTitle {
     facts: [],
     images: [],
   };
-}
-export function validSourceTitle(item: SourceTitle) {
+};
+export const validSourceTitle = (item: SourceTitle) => {
   return Boolean(
     item.title.trim() &&
       item.title.length <= 200 &&
@@ -148,13 +148,13 @@ export function validSourceTitle(item: SourceTitle) {
       item.year >= 1800 &&
       item.year <= new Date().getUTCFullYear()
   );
-}
-export async function discoverScreenTitles(
+};
+export const discoverScreenTitles = async (
   category: 'movies' | 'television' | 'games',
   page: number,
   from: number,
   to: number
-) {
+) => {
   if (category === 'games') {
     const result = z.object({ results: z.array(rawgResult) }).parse(
       await sourceJson(
@@ -185,11 +185,11 @@ export async function discoverScreenTitles(
     .filter((item) => !item.adult)
     .map((item) => tmdbTitle(item, category))
     .filter(validSourceTitle);
-}
-export async function searchSourceTitles(
+};
+export const searchSourceTitles = async (
   category: SourceCategory,
   query: string
-): Promise<SourceTitle[]> {
+): Promise<SourceTitle[]> => {
   if (category === 'movies' || category === 'television') {
     const type = category === 'movies' ? 'movie' : 'tv';
     const pages = await Promise.allSettled(
@@ -224,7 +224,7 @@ export async function searchSourceTitles(
   }
   // Artist/character source records are imported in batches. No expensive SPARQL query per keystroke.
   return [];
-}
+};
 const detail = z.object({
   genres: z.array(named).default([]),
   production_countries: z.array(named).default([]),
@@ -248,10 +248,10 @@ const detail = z.object({
     .optional(),
 });
 /** Episode stills depict an aired scene; series backdrops may be promotional composites. */
-export async function televisionScene(
+export const televisionScene = async (
   item: SourceTitle,
   seasonCount = 3
-): Promise<SourceImage | null> {
+): Promise<SourceImage | null> => {
   if (item.provider !== 'tmdb' || item.category !== 'television') return null;
   const today = new Date().toISOString().slice(0, 10);
   for (let season = 1; season <= Math.min(3, Math.max(1, seasonCount)); season++) {
@@ -290,8 +290,8 @@ export async function televisionScene(
     item.images.find((image) => image.role === 'frame' && image.sceneVerified && image.episode) ||
     null
   );
-}
-export async function hydrateScreenTitle(item: SourceTitle): Promise<SourceTitle> {
+};
+export const hydrateScreenTitle = async (item: SourceTitle): Promise<SourceTitle> => {
   if (item.provider === 'tmdb') {
     const type = item.category === 'movies' ? 'movie' : 'tv';
     const data = detail.parse(
@@ -420,4 +420,4 @@ export async function hydrateScreenTitle(item: SourceTitle): Promise<SourceTitle
       });
   }
   return item;
-}
+};
